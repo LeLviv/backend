@@ -50,14 +50,4 @@ tasks.named('bootBuildImage') {
 			"paketo-buildpacks/eclipse-temurin",
 			"paketo-buildpacks/java"
 	]
-
-	publish = false
-
-	docker {
-		publishRegistry {
-			username = System.getenv("DOCKER_USER")
-//			password = System.getenv("DOCKER_PASSWORD")
-			url = "https://ghcr.io"
-		}
-	}
 }
