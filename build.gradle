@@ -58,7 +58,7 @@ def jacocoExcludes = []
 
 tasks.jacocoTestReport {
     dependsOn(tasks.test)
-    
+
     reports {
         xml.required.set(true)
         html.required.set(true)
@@ -92,4 +92,12 @@ tasks.jacocoTestCoverageVerification {
 
 tasks.check {
 	dependsOn(tasks.jacocoTestCoverageVerification)
+}
+
+tasks.named('bootBuildImage') {
+	imageName = "backend:latest"
+	buildpacks = [
+			"paketo-buildpacks/eclipse-temurin",
+			"paketo-buildpacks/java"
+	]
 }
