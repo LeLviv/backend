@@ -44,6 +44,12 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Set image name
+        run: |
+          NAME="${GITHUB_REPOSITORY,,}"
+          if [ "$GITHUB_REF" = "refs/heads/main" ] || [ "$GITHUB_BASE_REF" = "main" ] ; then NAME="$NAME/prod"; fi
+          echo "IMAGE_NAME=$NAME" >> "$GITHUB_ENV"
+
       - name: Extract metadata for Docker
         id: meta
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
@@ -55,19 +61,15 @@ jobs:
             type=semver,pattern={{version}}
             type=raw,value=${{ inputs.version }},enable=${{ inputs.version != '' }}
 
-      - name: Set image name
-        run: |
-          NAME="${GITHUB_REPOSITORY,,}"
-          if [ "$GITHUB_REF" = "refs/heads/main" ]; then NAME="$NAME/prod"; fi
-          echo "IMAGE_NAME=$NAME" >> "$GITHUB_ENV"
-
       - name: Build container
+        env:
+          BP_IMAGE_LABELS: ${{ steps.meta.outputs.labels }}
         run: |
-          FORMATTED_LABELS=$(echo "${{ steps.meta.outputs.labels }}" | tr '\n' ' ')
-          ./gradlew bootBuildImage --imageName=backend:latest --environment="BP_IMAGE_LABELS=$FORMATTED_LABELS"
+          ./gradlew bootBuildImage --imageName=backend:latest --no-daemon
 
       - name: Add tags to image and push
         run: |
           for tag in ${{ steps.meta.outputs.tags }}; do
             docker tag backend:latest "${tag}"
           done
+          docker push --all-tags "${{env.REGISTRY}}/${{env.IMAGE_NAME}}"
