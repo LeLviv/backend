@@ -1,0 +1,75 @@
+name: Build
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version of image to publish"
+        required: false
+        type: string
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  build_container_job:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 25
+
+      - uses: gradle/actions/setup-gradle@v6
+        with:
+          build-scan-publish: false
+          cache-provider: basic
+          cache-read-only: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/develop' }}
+
+      - name: Log in to container registry
+        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set image name
+        run: |
+          NAME="${GITHUB_REPOSITORY,,}"
+          if [ "$GITHUB_REF" = "refs/heads/main" ] || [ "$GITHUB_BASE_REF" = "main" ] ; then NAME="$NAME/prod"; fi
+          echo "IMAGE_NAME=$NAME" >> "$GITHUB_ENV"
+
+      - name: Extract metadata for Docker
+        id: meta
+        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha,prefix=,format=short
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=raw,value=${{ inputs.version }},enable=${{ inputs.version != '' }}
+
+      - name: Build container
+        env:
+          BP_IMAGE_LABELS: ${{ steps.meta.outputs.labels }}
+        run: |
+          ./gradlew bootBuildImage --imageName=backend:latest --no-daemon
+
+      - name: Add tags to image and push
+        run: |
+          for tag in ${{ steps.meta.outputs.tags }}; do
+            docker tag backend:latest "${tag}"
+          done
+          docker push --all-tags "${{env.REGISTRY}}/${{env.IMAGE_NAME}}"
