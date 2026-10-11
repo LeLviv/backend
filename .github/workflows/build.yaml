@@ -47,7 +47,7 @@ jobs:
       - name: Set image name
         run: |
           NAME="${GITHUB_REPOSITORY,,}"
-          if [ "$GITHUB_REF" = "refs/heads/main" ] || [ "$GITHUB_BASE_REF" = "main" ] ; then NAME="$NAME/prod"; fi
+          if [ "$GITHUB_REF" = "refs/heads/main" ] ; then NAME="$NAME/prod"; fi
           echo "IMAGE_NAME=$NAME" >> "$GITHUB_ENV"
 
       - name: Extract metadata for Docker
@@ -62,10 +62,9 @@ jobs:
             type=raw,value=${{ inputs.version }},enable=${{ inputs.version != '' }}
 
       - name: Build container
-        env:
-          BP_IMAGE_LABELS: ${{ steps.meta.outputs.labels }}
         run: |
-          ./gradlew bootBuildImage --imageName=backend:latest --no-daemon
+          FORMATTED_LABELS=$(echo "${{ steps.meta.outputs.labels }}" | tr '\n' ' ')
+          ./gradlew bootBuildImage --imageName=backend:latest --environment="BP_IMAGE_LABELS=$FORMATTED_LABELS"
 
       - name: Add tags to image and push
         run: |

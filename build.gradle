@@ -96,8 +96,8 @@ tasks.check {
 
 tasks.named('bootBuildImage') {
 	imageName = "backend:latest"
-	environment = [
-	        "BP_JVM_TYPE" : "JRE",
-			"BP_JVM_PROVIDER": "eclipse-temurin"
+	buildpacks = [
+			"paketobuildpacks/adoptium",
+			"paketobuildpacks/java"
 	]
 }
