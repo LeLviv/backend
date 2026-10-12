@@ -102,7 +102,7 @@ tasks.check {
 tasks.named('bootBuildImage') {
 	imageName = "backend:latest"
 	buildpacks = [
-			"paketo-buildpacks/eclipse-temurin",
-			"paketo-buildpacks/java"
+			"paketobuildpacks/adoptium",
+			"paketobuildpacks/java"
 	]
 }
