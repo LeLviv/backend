@@ -19,6 +19,14 @@ spotless {
 		trimTrailingWhitespace()
 		endWithNewline()
 	}
+
+	yaml {
+		target '*.yaml', '*.yml', '.github/workflows/*.yaml', '.github/workflows/*.yml', 'src/main/resources/**/*.yaml',
+				'src/main/resources/**/*.yml'
+		trimTrailingWhitespace()
+		endWithNewline()
+		prettier()
+	}
 }
 
 checkstyle {
@@ -124,8 +132,4 @@ tasks.named('bootBuildImage') {
 			"paketobuildpacks/adoptium",
 			"paketobuildpacks/java"
 	]
-}
-
-tasks.named('checkstyleMain') {
-	dependsOn 'spotlessApply'
 }
