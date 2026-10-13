@@ -1,8 +1,11 @@
 name: Checkstyle
 
 on:
+  workflow_dispatch:
   push:
-    branches: ["*"]
+    branches: ["main", "develop"]
+  pull_request:
+    branches: ["**"]
 
 jobs:
   checkstyle:
@@ -25,5 +28,5 @@ jobs:
           cache-provider: basic
           cache-read-only: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/develop' }}
 
-      - name: Run tests with JaCoCo (Gradle)
+      - name: Run style check with Spotless and Checkstyle
         run: ./gradlew spotlessCheck checkstyleMain
