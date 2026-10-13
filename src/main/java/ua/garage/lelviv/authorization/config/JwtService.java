@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class JwtService {
 
-    private JwtProperties jwtProperties;
+    private final JwtProperties jwtProperties;
 
     public String extractUserPhone(String token) {
         return extractClaim(token, Claims::getSubject);
