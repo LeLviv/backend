@@ -23,8 +23,6 @@ spotless {
 	yaml {
 		target '*.yaml', '*.yml', '.github/workflows/*.yaml', '.github/workflows/*.yml', 'src/main/resources/**/*.yaml',
 				'src/main/resources/**/*.yml'
-		trimTrailingWhitespace()
-		endWithNewline()
 		prettier()
 	}
 }
