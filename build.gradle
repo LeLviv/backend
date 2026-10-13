@@ -14,7 +14,7 @@ jacoco {
 spotless {
 	java {
 		target 'src/*/java/**/*.java'
-		palantirJavaFormat('2.39.0')
+		palantirJavaFormat('2.80.0')
 		removeUnusedImports()
 		trimTrailingWhitespace()
 		endWithNewline()
@@ -23,8 +23,6 @@ spotless {
 	yaml {
 		target '*.yaml', '*.yml', '.github/workflows/*.yaml', '.github/workflows/*.yml', 'src/main/resources/**/*.yaml',
 				'src/main/resources/**/*.yml'
-		trimTrailingWhitespace()
-		endWithNewline()
 		prettier()
 	}
 }
