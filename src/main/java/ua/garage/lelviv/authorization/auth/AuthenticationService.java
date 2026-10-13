@@ -1,5 +1,6 @@
 package ua.garage.lelviv.authorization.auth;
 
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -12,8 +13,6 @@ import ua.garage.lelviv.authorization.entities.User;
 import ua.garage.lelviv.authorization.entities.UserRepository;
 import ua.garage.lelviv.authorization.exception.UserAlreadyExistException;
 
-import java.time.LocalDateTime;
-
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
@@ -23,7 +22,7 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationResponse register(RegisterRequest request) {
-        if(repository.findByPhoneNumber(request.getPhoneNumber()).isPresent()) {
+        if (repository.findByPhoneNumber(request.getPhoneNumber()).isPresent()) {
             throw new UserAlreadyExistException("Користувач з таким іменем вже існує");
         }
 
@@ -37,24 +36,17 @@ public class AuthenticationService {
                 .build();
         repository.save(user);
         var jwtToken = jwtService.generateToken(user);
-        return AuthenticationResponse.builder()
-                .token(jwtToken)
-                .build();
+        return AuthenticationResponse.builder().token(jwtToken).build();
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getPhoneNumber(),
-                        request.getPassword()
-                )
-        );
-        var user = repository.findByPhoneNumber(request.getPhoneNumber())
+                new UsernamePasswordAuthenticationToken(request.getPhoneNumber(), request.getPassword()));
+        var user = repository
+                .findByPhoneNumber(request.getPhoneNumber())
                 .orElseThrow(() -> new UsernameNotFoundException("Користувача з таким іменем не знайдено"));
 
         var jwtToken = jwtService.generateToken(user);
-        return AuthenticationResponse.builder()
-                .token(jwtToken)
-                .build();
+        return AuthenticationResponse.builder().token(jwtToken).build();
     }
 }

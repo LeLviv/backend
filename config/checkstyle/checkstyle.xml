@@ -17,5 +17,7 @@
         <module name="LocalVariableName"/>
 
         <module name="MemberName"/>
+
+        <module name="ConstantName"/>
     </module>
 </module>
