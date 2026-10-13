@@ -1,18 +1,17 @@
-name: Scan Leaks and Report
+name: Scan for leaks, add style check and load report
 
 on:
   push:
-    branches: ["*"]
+    branches: [ "*" ]
   pull_request:
-    branches: ["*"]
+    branches: [ "*" ]
 
 jobs:
-  scan_leaks:
+  scan_leaks_and_check_style:
     runs-on: ubuntu-latest
 
     permissions:
       contents: read
-      packages: read
 
     steps:
       - uses: actions/checkout@v6
@@ -31,3 +30,7 @@ jobs:
         with:
           name: betterleaks-report
           path: ${{ steps.betterleaks.outputs.report-path }}
+
+      - name: Check style
+        if: '!cancelled()'
+        uses: $/.github/checkstyle.yaml
