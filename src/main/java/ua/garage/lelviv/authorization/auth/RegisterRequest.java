@@ -18,7 +18,6 @@ public class RegisterRequest {
     @Size(min = 2, max = 64, message = "Ім'я повинне містити мінімум 2 літери")
     private String firstname;
     @NotBlank
-    @Size
     @Size(min = 2, max = 64, message = "Прізвище повинне містити мінімум 2 літери")
     private String lastname;
     @NotBlank

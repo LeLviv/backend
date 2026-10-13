@@ -10,7 +10,7 @@ import ua.garage.lelviv.authorization.config.JwtService;
 import ua.garage.lelviv.authorization.entities.Role;
 import ua.garage.lelviv.authorization.entities.User;
 import ua.garage.lelviv.authorization.entities.UserRepository;
-import ua.garage.lelviv.authorization.exception.UserAlreadyExistExeption;
+import ua.garage.lelviv.authorization.exception.UserAlreadyExistException;
 
 import java.time.LocalDateTime;
 
@@ -24,7 +24,7 @@ public class AuthenticationService {
 
     public AuthenticationResponse register(RegisterRequest request) {
         if(repository.findByPhoneNumber(request.getPhoneNumber()).isPresent()) {
-            throw new UserAlreadyExistExeption("Користувач з таким іменем вже існує");
+            throw new UserAlreadyExistException("Користувач з таким іменем вже існує");
         }
 
         var user = User.builder()
