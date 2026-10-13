@@ -17,6 +17,7 @@ env:
 jobs:
   build_container_job:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     permissions:
       contents: read
@@ -72,3 +73,9 @@ jobs:
             docker tag backend:latest "${tag}"
           done
           docker push --all-tags "${{env.REGISTRY}}/${{env.IMAGE_NAME}}"
+
+      - name: Scan built image using Trivy
+        env:
+          REGISTRY: ${{ env.REGISTRY }}
+          IMAGE_NAME: ${{ env.IMAGE_NAME }}
+        uses: $/,github/trivy-scan.yaml
