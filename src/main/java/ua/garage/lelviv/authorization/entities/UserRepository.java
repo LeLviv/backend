@@ -1,9 +1,7 @@
 package ua.garage.lelviv.authorization.entities;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import ua.garage.lelviv.authorization.entities.User;
-
 import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
