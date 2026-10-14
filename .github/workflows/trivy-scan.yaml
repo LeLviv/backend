@@ -11,8 +11,6 @@ jobs:
   scan_trivy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-
       - name: Scan image with Trivy
         uses: aquasecurity/trivy-action@v0.36.0
         with:
@@ -28,4 +26,3 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: trivy-report
-          path: .
