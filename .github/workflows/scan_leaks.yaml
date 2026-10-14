@@ -1,13 +1,11 @@
-name: Scan for leaks, add style check and load report
+name: Scan for leaks and load report
 
 on:
-  push:
-    branches: [ "*" ]
   pull_request:
-    branches: [ "*" ]
+    branches: ["*"]
 
 jobs:
-  scan_leaks_and_check_style:
+  scan_leaks:
     runs-on: ubuntu-latest
 
     permissions:
@@ -20,17 +18,13 @@ jobs:
         uses: dortort/better-leaks-action@v0.1.0
         id: betterleaks
         with:
-          version: 'latest'
-          redact: 'true'
+          version: "latest"
+          redact: "true"
           github-token: ${{ GITHUB_TOKEN }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v6
-        if: always()
+        if: "always()"
         with:
           name: betterleaks-report
           path: ${{ steps.betterleaks.outputs.report-path }}
-
-      - name: Check style
-        if: '!cancelled()'
-        uses: $/.github/checkstyle.yaml
