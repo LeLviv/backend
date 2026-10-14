@@ -72,9 +72,8 @@ jobs:
             docker tag backend:latest "${tag}"
           done
           docker push --all-tags "${{env.REGISTRY}}/${{env.IMAGE_NAME}}"
-
-      - name: Scan built image using Trivy
-        env:
-          REGISTRY: ${{ env.REGISTRY }}
-          IMAGE_NAME: ${{ env.IMAGE_NAME }}
-        uses: $/,github/trivy-scan.yaml
+  scan:
+    needs: build_container_job
+    uses: ./.github/workflows/trivy-scan.yaml
+    with:
+      image-ref: "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}"

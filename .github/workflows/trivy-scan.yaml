@@ -1,18 +1,31 @@
 name: Scan image using Trivy
 
 on:
-  workflow_call
+  workflow_call:
+    inputs:
+      image-ref:
+        required: true
+        type: string
 
 jobs:
   scan_trivy:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v6
+
       - name: Scan image with Trivy
         uses: aquasecurity/trivy-action@v0.36.0
         with:
-          image-ref: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}'
-          format: 'table'
-          exit-code: '1'
+          image-ref: "${{ inputs.image-ref }}"
+          format: "table"
+          exit-code: "1"
           ignore-unfixed: true
-          vuln-type: 'os.library'
-          severity: 'CRITICAL,HIGH'
+          vuln-type: "os,library"
+          severity: "CRITICAL,HIGH"
+
+      - name: Upload Trivy artifact
+        if: "!cancelled()"
+        uses: actions/upload-artifact@v6
+        with:
+          name: trivy-report
+          path: .
