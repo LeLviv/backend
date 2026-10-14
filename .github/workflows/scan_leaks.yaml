@@ -2,7 +2,7 @@ name: Scan for leaks and load report
 
 on:
   pull_request:
-    branches: ["*"]
+    branches: ["**"]
 
 jobs:
   scan_leaks:
@@ -13,9 +13,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - name: Scan repository for leaks
-        uses: dortort/better-leaks-action@v0.1.0
+        uses: dortort/betterleaks-action@v0.1.0
         id: betterleaks
         with:
           version: "latest"
