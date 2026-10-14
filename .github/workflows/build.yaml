@@ -17,6 +17,7 @@ env:
 jobs:
   build_container_job:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     permissions:
       contents: read
@@ -71,3 +72,8 @@ jobs:
             docker tag backend:latest "${tag}"
           done
           docker push --all-tags "${{env.REGISTRY}}/${{env.IMAGE_NAME}}"
+  scan:
+    needs: build_container_job
+    uses: ./.github/workflows/trivy-scan.yaml
+    with:
+      image-ref: "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}"
