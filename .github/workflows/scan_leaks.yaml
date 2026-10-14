@@ -1,0 +1,30 @@
+name: Scan for leaks and load report
+
+on:
+  pull_request:
+    branches: ["*"]
+
+jobs:
+  scan_leaks:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Scan repository for leaks
+        uses: dortort/better-leaks-action@v0.1.0
+        id: betterleaks
+        with:
+          version: "latest"
+          redact: "true"
+          github-token: ${{ GITHUB_TOKEN }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v6
+        if: "always()"
+        with:
+          name: betterleaks-report
+          path: ${{ steps.betterleaks.outputs.report-path }}
