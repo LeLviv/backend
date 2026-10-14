@@ -20,7 +20,7 @@ jobs:
         with:
           version: "latest"
           redact: "true"
-          github-token: ${{ GITHUB_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v6
