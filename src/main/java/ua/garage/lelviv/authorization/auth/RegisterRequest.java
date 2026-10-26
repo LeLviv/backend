@@ -16,7 +16,7 @@ public class RegisterRequest {
 
     @NotBlank
     @Size(min = 2, max = 64, message = "Ім'я повинне містити мінімум 2 літери")
-    private String username;
+    private String visibleName;
 
     @NotBlank
     @Email(message = "Введено некоректний E-mail")
