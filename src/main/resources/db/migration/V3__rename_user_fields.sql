@@ -1,0 +1,5 @@
+ALTER TABLE users DROP CONSTRAINT IF EXISTS users_phone_number_check;
+ALTER TABLE users RENAME COLUMN name TO username;
+ALTER TABLE users RENAME COLUMN phone_number TO email;
+ALTER TABLE users ALTER COLUMN email SET DATA TYPE VARCHAR(255);
+ALTER TABLE users DROP COLUMN surname;
