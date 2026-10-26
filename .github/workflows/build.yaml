@@ -72,12 +72,14 @@ jobs:
           ./gradlew bootBuildImage --imageName=backend:latest --environment="BP_IMAGE_LABELS=$FORMATTED_LABELS"
 
       - name: Add tags to image and push
+        env:
+          TAGS: ${{ steps.meta.outputs.tags }}
         run: |
           while IFS= read -r tag; do
             if [ -n "$tag" ]; then
               docker tag backend:latest "${tag}"
             fi
-          done <<< "${{ steps.meta.outputs.tags }}"
+          done <<< "$TAGS"
           docker push --all-tags "${{env.REGISTRY}}/${{env.IMAGE_NAME}}"
   scan:
     needs: build_container_job
