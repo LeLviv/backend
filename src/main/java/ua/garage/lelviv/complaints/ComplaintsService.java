@@ -1,14 +1,13 @@
 package ua.garage.lelviv.complaints;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +22,7 @@ public class ComplaintsService {
 
         if (photo != null && !photo.isEmpty()) {
             try {
-                String fileName = UUID.randomUUID().toString() + "_" + photo.getOriginalFilename();
+                String fileName = UUID.randomUUID() + "_" + photo.getOriginalFilename();
                 Path filepath = Paths.get(UPLOAD_DIR + fileName);
 
                 Files.createDirectories(filepath.getParent());
