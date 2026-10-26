@@ -13,8 +13,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AuthenticationRequest {
 
-    @NotBlank(message = "Номер телефону обов'язковий")
-    private String phoneNumber;
+    @NotBlank(message = "E-mail обов'язковий")
+    private String email;
 
     @NotBlank(message = "Поле пароль не може бути порожнім")
     @Size(min = 8, message = "Пароль містить мінімум 8 символів")

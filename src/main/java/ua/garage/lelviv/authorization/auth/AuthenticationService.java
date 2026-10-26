@@ -22,14 +22,13 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationResponse register(RegisterRequest request) {
-        if (repository.findByPhoneNumber(request.getPhoneNumber()).isPresent()) {
+        if (repository.findByEmail(request.getEmail()).isPresent()) {
             throw new UserAlreadyExistException("Користувач з таким іменем вже існує");
         }
 
         var user = User.builder()
-                .name(request.getFirstname())
-                .surname(request.getLastname())
-                .phoneNumber(request.getPhoneNumber())
+                .username(request.getUsername())
+                .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.USER)
                 .dateCreated(LocalDateTime.now())
@@ -41,9 +40,9 @@ public class AuthenticationService {
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getPhoneNumber(), request.getPassword()));
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
         var user = repository
-                .findByPhoneNumber(request.getPhoneNumber())
+                .findByEmail(request.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("Користувача з таким іменем не знайдено"));
 
         var jwtToken = jwtService.generateToken(user);
