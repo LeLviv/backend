@@ -1,5 +1,6 @@
 package ua.garage.lelviv.authorization.auth;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -15,15 +16,11 @@ public class RegisterRequest {
 
     @NotBlank
     @Size(min = 2, max = 64, message = "Ім'я повинне містити мінімум 2 літери")
-    private String firstname;
+    private String visibleName;
 
     @NotBlank
-    @Size(min = 2, max = 64, message = "Прізвище повинне містити мінімум 2 літери")
-    private String lastname;
-
-    @NotBlank
-    @Size(min = 12, max = 12, message = "Номер телефону повинен містити 12 символів")
-    private String phoneNumber;
+    @Email(message = "Введено некоректний E-mail")
+    private String email;
 
     @NotBlank
     @Size(min = 8, message = "Пароль повинен містити мінімум 8 літер")

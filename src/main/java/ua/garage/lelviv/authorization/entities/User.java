@@ -32,13 +32,13 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
-    private String surname;
+    @Column(name = "username")
+    private String visibleName;
 
     @Column(name = "password_hash")
     private String password;
 
-    private String phoneNumber;
+    private String email;
     private LocalDateTime dateCreated;
 
     @Enumerated(EnumType.STRING)
@@ -56,7 +56,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return phoneNumber;
+        return email;
     }
 
     @Override
