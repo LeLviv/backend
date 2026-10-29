@@ -1,5 +1,6 @@
 package ua.garage.lelviv.authorization.auth;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -16,6 +17,7 @@ public class RegisterRequest {
 
     @NotBlank
     @Size(min = 2, max = 64, message = "Ім'я повинне містити мінімум 2 літери")
+    @JsonProperty("username")
     private String visibleName;
 
     @NotBlank
