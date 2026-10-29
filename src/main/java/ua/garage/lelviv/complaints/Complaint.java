@@ -1,0 +1,34 @@
+package ua.garage.lelviv.complaints;
+
+import jakarta.persistence.*;
+import java.time.LocalDateTime;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+
+@Data
+@Builder
+@Entity
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "complaints")
+public class Complaint {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @NonNull
+    private String author;
+
+    @NonNull
+    private String problem;
+
+    @Column(name = "photoPath")
+    private String photoPath;
+
+    private Double latitude;
+    private Double longitude;
+
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
+}
