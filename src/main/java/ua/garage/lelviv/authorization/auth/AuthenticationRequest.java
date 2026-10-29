@@ -1,5 +1,6 @@
 package ua.garage.lelviv.authorization.auth;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -13,8 +14,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AuthenticationRequest {
 
-    @NotBlank(message = "Номер телефону обов'язковий")
-    private String phoneNumber;
+    @NotBlank(message = "E-mail обов'язковий")
+    @Email(message = "Введено некоректний E-mail")
+    private String email;
 
     @NotBlank(message = "Поле пароль не може бути порожнім")
     @Size(min = 8, message = "Пароль містить мінімум 8 символів")
