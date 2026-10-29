@@ -2,6 +2,9 @@ package ua.garage.lelviv.complaints;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -25,4 +28,8 @@ public class Complaint {
 
     private Double latitude;
     private Double longitude;
+
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
 }

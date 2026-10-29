@@ -58,7 +58,7 @@ public class ComplaintsService {
         return new ComplaintResponse("Скаргу успішно подано");
     }
 
-    public List<Complaint> getComplaints(String username) throws AccessDeniedException {
+    public List<Complaint> getComplaints(String username) {
         var user = userRepository
                 .findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Користувача не знайдено"));
