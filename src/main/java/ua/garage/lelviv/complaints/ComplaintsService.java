@@ -60,7 +60,7 @@ public class ComplaintsService {
 
     public List<Complaint> getComplaints(String username) throws AccessDeniedException {
         var user = userRepository
-                .findByPhoneNumber(username)
+                .findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Користувача не знайдено"));
 
         var userRole = user.getRole();
