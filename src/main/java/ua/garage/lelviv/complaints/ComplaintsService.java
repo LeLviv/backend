@@ -7,10 +7,12 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 import ua.garage.lelviv.authorization.entities.Role;
 import ua.garage.lelviv.authorization.entities.UserRepository;
 
@@ -42,7 +44,7 @@ public class ComplaintsService {
 
                 photoUrl = "/complaints/photos/" + fileName;
             } catch (IOException e) {
-                throw new PhotoSavingException("помилка збереження фото");
+                throw new PhotoSavingException("Помилка збереження фото");
             }
         }
 
@@ -51,7 +53,7 @@ public class ComplaintsService {
                 .longitude(complaintRequest.getLongitude())
                 .latitude(complaintRequest.getLatitude())
                 .author(username)
-                .photoUrl(photoUrl)
+                .photoPath(photoUrl)
                 .build();
 
         repository.save(problem);
@@ -66,9 +68,24 @@ public class ComplaintsService {
         var userRole = user.getRole();
 
         if (userRole != Role.ADMIN) {
-            throw new AccessDeniedException("тільки адміни мають право переглядати скарги");
+            throw new AccessDeniedException("Тільки адміни мають право переглядати скарги");
         }
 
         return repository.findAll();
+    }
+
+    public Complaint getComplaint(String username, Long id) {
+        var user = userRepository
+                .findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Користувача не знайдено"));
+
+        var userRole = user.getRole();
+
+        if (userRole != Role.ADMIN) {
+            throw new AccessDeniedException("Тільки адміни мають право переглядати скарги");
+        }
+
+        return repository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Скаргу з ID " + id + " не знайдено" ));
     }
 }
