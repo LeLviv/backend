@@ -13,7 +13,7 @@ jacoco {
 
 spotless {
 	java {
-		target 'src/*/java/**/*.java'
+		target 'src/**/*.java'
 		palantirJavaFormat('2.102.0')
 		removeUnusedImports()
 		trimTrailingWhitespace()
@@ -54,8 +54,12 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-aop:4.0.0-M2'
+	implementation 'org.springframework.boot:spring-boot-starter-cache'
 	implementation 'org.flywaydb:flyway-database-postgresql'
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.0'
+	implementation 'io.github.resilience4j:resilience4j-spring-boot4:2.4.0'
+	implementation 'com.github.ben-manes.caffeine:caffeine:3.3.1'
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
