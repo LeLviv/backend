@@ -5,6 +5,6 @@ CREATE TABLE complaints
     problem    TEXT        NOT NULL,
     latitude   DOUBLE PRECISION,
     longitude  DOUBLE PRECISION,
-    photo_url  VARCHAR(512),
+    photoPath  VARCHAR(512),
     created_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

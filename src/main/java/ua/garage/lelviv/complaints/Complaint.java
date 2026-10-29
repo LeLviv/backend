@@ -20,7 +20,7 @@ public class Complaint {
     @NonNull
     private String problem;
 
-    @Column(name = "photo_url")
+    @Column(name = "photoPath")
     private String photoUrl;
 
     private Double latitude;
