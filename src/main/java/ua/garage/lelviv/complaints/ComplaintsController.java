@@ -3,7 +3,6 @@ package ua.garage.lelviv.complaints;
 import jakarta.validation.Valid;
 import java.security.Principal;
 import java.util.List;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

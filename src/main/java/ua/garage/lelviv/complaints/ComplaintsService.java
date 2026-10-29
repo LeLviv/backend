@@ -85,7 +85,9 @@ public class ComplaintsService {
             throw new AccessDeniedException("Тільки адміни мають право переглядати скарги");
         }
 
-        return repository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Скаргу з ID " + id + " не знайдено" ));
+        return repository
+                .findById(id)
+                .orElseThrow(
+                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Скаргу з ID " + id + " не знайдено"));
     }
 }
