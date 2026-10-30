@@ -19,4 +19,14 @@ public class WeatherExceptionHandler {
 
         return problemDetail;
     }
+
+    @ExceptionHandler(RegionNotFoundException.class)
+    public ProblemDetail handleRegionNotFound(RegionNotFoundException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
+        problemDetail.setTitle("Region Not Found");
+        problemDetail.setType(URI.create("https://lelviv.pp.ua/errors/region-not-found"));
+        problemDetail.setProperty("timestamp", Instant.now());
+
+        return problemDetail;
+    }
 }

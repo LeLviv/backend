@@ -20,32 +20,17 @@ public class WeatherController {
     private final WeatherService service;
 
     @GetMapping("/hourly")
-    public ResponseEntity<WeatherHourlyDto> getWeatherHourly(
-            @Valid @RequestBody(required = false) WeatherRequest request) {
-        if (request == null) {
-            request = new WeatherRequest();
-        }
-
+    public ResponseEntity<WeatherHourlyDto> getWeatherHourly(@Valid @RequestBody WeatherRequest request) {
         return ResponseEntity.ok(service.getWeatherHourly(request));
     }
 
     @GetMapping("/weekly")
-    public ResponseEntity<WeatherWeeklyDto> getWeatherWeekly(
-            @Valid @RequestBody(required = false) WeatherRequest request) {
-        if (request == null) {
-            request = new WeatherRequest();
-        }
-
+    public ResponseEntity<WeatherWeeklyDto> getWeatherWeekly(@Valid @RequestBody WeatherRequest request) {
         return ResponseEntity.ok(service.getWeatherWeekly(request));
     }
 
     @GetMapping("/daily")
-    public ResponseEntity<WeatherDailyDto> getWeatherDaily(
-            @Valid @RequestBody(required = false) WeatherRequest request) {
-        if (request == null) {
-            request = new WeatherRequest();
-        }
-
+    public ResponseEntity<WeatherDailyDto> getWeatherDaily(@Valid @RequestBody WeatherRequest request) {
         return ResponseEntity.ok(service.getWeatherDaily(request));
     }
 }
