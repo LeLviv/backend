@@ -24,8 +24,8 @@ public class WeatherService {
             key = "'hourly_' + #request.latitude + '_' + #request.longitude")
     @CircuitBreaker(name = "weather-service", fallbackMethod = "getHourlyFallback")
     public WeatherHourlyDto getWeatherHourly(WeatherRequest request) {
-        WeatherHourlyDto dto = weatherProvider.fetchWeatherHourly(request.getLatitude(), request.getLongitude());
-        weatherFallbackStore.save("hourly", request.getLatitude(), request.getLongitude(), dto);
+        WeatherHourlyDto dto = weatherProvider.fetchWeatherHourly(request.latitude(), request.longitude());
+        weatherFallbackStore.save("hourly", request.latitude(), request.longitude(), dto);
         return dto;
     }
 
@@ -33,14 +33,14 @@ public class WeatherService {
         log.warn(
                 "Hourly weather failed ({}). Fetching fallback for ({}, {})",
                 throwable.getMessage(),
-                request.getLatitude(),
-                request.getLongitude());
+                request.latitude(),
+                request.longitude());
         return weatherFallbackStore
-                .get("hourly", request.getLatitude(), request.getLongitude(), WeatherHourlyDto.class)
+                .get("hourly", request.latitude(), request.longitude(), WeatherHourlyDto.class)
                 .map(stale -> stale.withIsStale(true))
                 .orElseThrow(() -> new WeatherServiceUnavailableException(
-                        "Погодинний прогноз погоди тимчасово недоступний для координат: " + request.getLatitude() + ", "
-                                + request.getLongitude()));
+                        "Погодинний прогноз погоди тимчасово недоступний для координат: " + request.latitude() + ", "
+                                + request.longitude()));
     }
 
     @Cacheable(
@@ -48,8 +48,8 @@ public class WeatherService {
             key = "'weekly_' + #request.latitude + '_' + #request.longitude")
     @CircuitBreaker(name = "weather-service", fallbackMethod = "getWeeklyFallback")
     public WeatherWeeklyDto getWeatherWeekly(WeatherRequest request) {
-        WeatherWeeklyDto dto = weatherProvider.fetchWeatherWeekly(request.getLatitude(), request.getLongitude());
-        weatherFallbackStore.save("weekly", request.getLatitude(), request.getLongitude(), dto);
+        WeatherWeeklyDto dto = weatherProvider.fetchWeatherWeekly(request.latitude(), request.longitude());
+        weatherFallbackStore.save("weekly", request.latitude(), request.longitude(), dto);
         return dto;
     }
 
@@ -57,14 +57,14 @@ public class WeatherService {
         log.warn(
                 "Weekly weather failed ({}). Fetching fallback for ({}, {})",
                 throwable.getMessage(),
-                request.getLatitude(),
-                request.getLongitude());
+                request.latitude(),
+                request.longitude());
         return weatherFallbackStore
-                .get("weekly", request.getLatitude(), request.getLongitude(), WeatherWeeklyDto.class)
+                .get("weekly", request.latitude(), request.longitude(), WeatherWeeklyDto.class)
                 .map(stale -> stale.withIsStale(true))
                 .orElseThrow(() -> new WeatherServiceUnavailableException(
-                        "Тижневий прогноз погоди тимчасово недоступний для координат: " + request.getLatitude() + ", "
-                                + request.getLongitude()));
+                        "Тижневий прогноз погоди тимчасово недоступний для координат: " + request.latitude() + ", "
+                                + request.longitude()));
     }
 
     @Cacheable(
@@ -72,8 +72,8 @@ public class WeatherService {
             key = "'daily_' + #request.latitude + '_' + #request.longitude")
     @CircuitBreaker(name = "weather-service", fallbackMethod = "getDailyFallback")
     public WeatherDailyDto getWeatherDaily(WeatherRequest request) {
-        WeatherDailyDto dto = weatherProvider.fetchWeatherDaily(request.getLatitude(), request.getLongitude());
-        weatherFallbackStore.save("daily", request.getLatitude(), request.getLongitude(), dto);
+        WeatherDailyDto dto = weatherProvider.fetchWeatherDaily(request.latitude(), request.longitude());
+        weatherFallbackStore.save("daily", request.latitude(), request.longitude(), dto);
         return dto;
     }
 
@@ -81,13 +81,13 @@ public class WeatherService {
         log.warn(
                 "Daily weather failed ({}). Fetching fallback for ({}, {})",
                 throwable.getMessage(),
-                request.getLatitude(),
-                request.getLongitude());
+                request.latitude(),
+                request.longitude());
         return weatherFallbackStore
-                .get("daily", request.getLatitude(), request.getLongitude(), WeatherDailyDto.class)
+                .get("daily", request.latitude(), request.longitude(), WeatherDailyDto.class)
                 .map(stale -> stale.withIsStale(true))
                 .orElseThrow(() ->
                         new WeatherServiceUnavailableException("Прогноз погоди тимчасово недоступний для координат: "
-                                + request.getLatitude() + ", " + request.getLongitude()));
+                                + request.latitude() + ", " + request.longitude()));
     }
 }
