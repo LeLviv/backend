@@ -16,6 +16,7 @@ public class OpenMeteoProvider implements WeatherProvider {
 
     @Qualifier("openMeteoRestClient")
     private final RestClient openMeteoRestClient;
+
     private final OpenMeteoMapper openMeteoMapper;
 
     @Override
