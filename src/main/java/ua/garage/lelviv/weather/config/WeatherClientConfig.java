@@ -16,7 +16,13 @@ import ua.garage.lelviv.weather.exception.WeatherProviderException;
 public class WeatherClientConfig {
     @Bean
     public RestClient openMeteoRestClient(WeatherProvidersProperties properties) {
-        var config = properties.providers().openMeteo();
+        var config = properties.provider().get("open-meteo");
+        return createRestClient(config);
+    }
+
+    @Bean
+    public RestClient openWeatherRestClient(WeatherProvidersProperties properties) {
+        var config = properties.provider().get("open-weather");
         return createRestClient(config);
     }
 

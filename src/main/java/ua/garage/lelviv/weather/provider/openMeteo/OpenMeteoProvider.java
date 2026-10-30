@@ -3,6 +3,7 @@ package ua.garage.lelviv.weather.provider.openMeteo;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.client.RestClient;
 import ua.garage.lelviv.weather.entity.*;
 import ua.garage.lelviv.weather.provider.WeatherProvider;
@@ -12,6 +13,8 @@ import ua.garage.lelviv.weather.provider.openMeteo.response.OpenMeteoWeeklyRespo
 
 @RequiredArgsConstructor
 public class OpenMeteoProvider implements WeatherProvider {
+
+    @Qualifier("openMeteoRestClient")
     private final RestClient openMeteoRestClient;
     private final OpenMeteoMapper openMeteoMapper;
 

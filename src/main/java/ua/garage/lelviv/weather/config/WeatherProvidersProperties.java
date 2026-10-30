@@ -4,16 +4,16 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.Duration;
+import java.util.Map;
+
 import org.hibernate.validator.constraints.URL;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.validation.annotation.Validated;
 
 @Validated
-@ConfigurationProperties(prefix = "spring.application.weather")
-public record WeatherProvidersProperties(@NotNull @Valid Providers providers) {
-
-    public record Providers(@NotNull @Valid ProviderConfig openMeteo) {}
+@ConfigurationProperties(prefix = "app.weather")
+public record WeatherProvidersProperties(@NotNull @Valid Map<String, ProviderConfig> provider) {
 
     public record ProviderConfig(
             boolean enabled,

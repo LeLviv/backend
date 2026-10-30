@@ -7,7 +7,7 @@ import java.time.Duration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.bind.DefaultValue;
 
-@ConfigurationProperties(prefix = "spring.application.weather.cache")
+@ConfigurationProperties(prefix = "app.weather.cache")
 public record WeatherCacheProperties(
         @NotNull @Valid CacheProp daily,
 

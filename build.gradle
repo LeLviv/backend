@@ -13,7 +13,7 @@ jacoco {
 
 spotless {
 	java {
-		target 'src/**/*.java'
+		target 'src/**/java/**/*.java'
 		palantirJavaFormat('2.102.0')
 		removeUnusedImports()
 		trimTrailingWhitespace()

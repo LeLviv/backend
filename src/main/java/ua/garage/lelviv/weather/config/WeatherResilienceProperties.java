@@ -10,7 +10,7 @@ import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.validation.annotation.Validated;
 
 @Validated
-@ConfigurationProperties(prefix = "spring.application.weather.resilience")
+@ConfigurationProperties(prefix = "app.weather.resilience")
 public record WeatherResilienceProperties(
         @NotNull @Valid Map<String, CircuitBreakerProp> circuitBreaker,
 

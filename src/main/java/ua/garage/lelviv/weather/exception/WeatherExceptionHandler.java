@@ -14,7 +14,7 @@ public class WeatherExceptionHandler {
     public ProblemDetail handleWeatherUnavailable(WeatherServiceUnavailableException ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.SERVICE_UNAVAILABLE, ex.getMessage());
         problemDetail.setTitle("Weather Service Unavailable");
-        problemDetail.setType(URI.create("https://api.lelviv.ua/errors/weather-unavailable"));
+        problemDetail.setType(URI.create("https://lelviv.pp.ua/errors/weather-unavailable"));
         problemDetail.setProperty("timestamp", Instant.now());
 
         return problemDetail;

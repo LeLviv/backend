@@ -20,7 +20,7 @@ public class WeatherProvidersConfig {
     @Bean
     @Order(1)
     @ConditionalOnProperty(
-            prefix = "spring.application.weather.providers.open-meteo",
+            prefix = "app.weather.provider.open-meteo",
             name = "enabled",
             havingValue = "true",
             matchIfMissing = true)
