@@ -4,3 +4,9 @@ spring:
     security:
       jwt:
         secret-key: ${JWT_SECRET_KEY}
+app:
+  air-raid:
+    api-query-enabled: true
+    secret-key: ${AIR_RAID_API_TOKEN}
+  firebase:
+    secret-key: ${FIREBASE_SECRET}
