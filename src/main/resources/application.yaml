@@ -4,3 +4,78 @@ spring:
     security:
       jwt:
         secret-key: ${JWT_SECRET_KEY}
+
+app:
+  weather:
+    base-errors-url: "https://lelviv.pp.ua/errors"
+
+    provider:
+      open-meteo:
+        enabled: true
+        name: "Open-Meteo"
+        base-url: "https://api.open-meteo.com/v1"
+        connect-timeout: 2s
+        read-timeout: 3s
+
+      open-weather:
+        enabled: false
+        name: "OpenWeatherMap"
+        base-url: "https://api.openweathermap.org/data/4.0"
+        connect-timeout: 2s
+        read-timeout: 3s
+
+    region:
+      lviv:
+        latitude: 49.8383
+        longitude: 24.0232
+
+    cache:
+      daily:
+        name: "weatherDailyCache"
+        ttl: 10m
+        max-size: 5000
+
+      hourly:
+        name: "weatherHourlyCache"
+        ttl: 20m
+        max-size: 5000
+
+      weekly:
+        name: "weatherWeeklyCache"
+        ttl: 3h
+        max-size: 2000
+
+      fallback:
+        name: "weatherFallbackCache"
+        ttl: 24h
+        max-size: 10000
+
+    resilience:
+      retry:
+        open-meteo:
+          max-attempts: 3
+          wait-duration: 300ms
+          exponential-backoff-multiplier: 2
+
+        open-weather:
+          max-attempts: 2
+          wait-duration: 200ms
+          exponential-backoff-multiplier: 2
+
+      circuit-breaker:
+        weather-client-service:
+          sliding-window-size: 10
+          failure-rate-threshold: 50
+          wait-duration-in-open-state: 10s
+          permitted-number-of-calls-in-half-open-state: 3
+          automatic-transition-from-open-to-half-open-enabled: true
+
+        open-meteo:
+          sliding-window-size: 6
+          failure-rate-threshold: 50
+          wait-duration-in-open-state: 15s
+
+        open-weather:
+          sliding-window-size: 6
+          failure-rate-threshold: 50
+          wait-duration-in-open-state: 30s
