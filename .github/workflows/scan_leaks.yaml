@@ -3,6 +3,7 @@ name: Scan for leaks and load report
 on:
   pull_request:
     branches: ["**"]
+  workflow_dispatch:
 
 jobs:
   scan_leaks:
