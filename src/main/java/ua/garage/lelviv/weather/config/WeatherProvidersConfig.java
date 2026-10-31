@@ -8,14 +8,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.web.client.RestClient;
-import ua.garage.lelviv.weather.entity.RegionMap;
 import ua.garage.lelviv.weather.provider.WeatherProvider;
 import ua.garage.lelviv.weather.provider.openMeteo.OpenMeteoMapper;
 import ua.garage.lelviv.weather.provider.openMeteo.OpenMeteoProvider;
 
 @Slf4j
 @Configuration
-@EnableConfigurationProperties({WeatherProvidersProperties.class, RegionMap.class})
+@EnableConfigurationProperties(WeatherProvidersProperties.class)
 public class WeatherProvidersConfig {
 
     @Bean

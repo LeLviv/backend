@@ -7,6 +7,8 @@ spring:
 
 app:
   weather:
+    base-errors-url: "https://lelviv.pp.ua/errors"
+
     provider:
       open-meteo:
         enabled: true
