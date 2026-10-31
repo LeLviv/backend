@@ -7,6 +7,8 @@ spring:
 app:
   air-raid:
     api-query-enabled: true
+    region-id: "1293"
+    base-url: "https://api.ukrainealarm.com/api"
     secret-key: ${AIR_RAID_API_TOKEN}
   firebase:
     secret-key: ${FIREBASE_SECRET}

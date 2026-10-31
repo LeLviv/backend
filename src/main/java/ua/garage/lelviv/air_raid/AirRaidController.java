@@ -23,7 +23,7 @@ public class AirRaidController {
         service.updateAirRaidStatus();
     }
 
-    @GetMapping("/status")
+    @GetMapping
     public ResponseEntity<String> getAirRaidStatus() {
         AirRaidStatus s = service.getStatus();
         System.out.println("Querying air raid status " + s);

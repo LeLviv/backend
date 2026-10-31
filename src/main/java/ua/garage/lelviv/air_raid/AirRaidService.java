@@ -1,38 +1,25 @@
 package ua.garage.lelviv.air_raid;
 
-import static ua.garage.lelviv.air_raid.AirRaidConfig.lvivUID;
-
 import com.github.benmanes.caffeine.cache.Cache;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class AirRaidService {
-    private final RestClient airRaidAPI;
+    private final RestClient airRaidProvider;
     private final Cache<String, AirRaidStatus> airRaidCache;
-    private final String airRaidSecret;
-
-    public AirRaidService(
-            RestClient.Builder clientBuilder,
-            Cache<String, AirRaidStatus> airRaidCache,
-            @Value("${app.air-raid.secret-key}") String airRaidSecret) {
-        this.airRaidAPI = clientBuilder
-                .baseUrl("https://api.ukrainealarm.com/api")
-                .defaultHeader("accept", "application/json")
-                .defaultHeader("Authorization", airRaidSecret.trim())
-                .build();
-        this.airRaidCache = airRaidCache;
-        this.airRaidSecret = airRaidSecret;
-        airRaidCache.put("STATUS", AirRaidStatus.UNKNOWN);
-    }
+    private final AirRaidProperties properties;
 
     public void sendNotification() {
         // TODO: Send message to firebase
@@ -63,35 +50,35 @@ public class AirRaidService {
     }
 
     public void updateAirRaidStatus() {
-        List<AirRaidAPIResponse> responseList = airRaidAPI
+        List<Alert> responseList = airRaidProvider
                 .get()
-                .uri("/v3/alerts/" + lvivUID)
+                .uri("/v3/alerts/" + properties.regionId())
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
-                .body(new ParameterizedTypeReference<List<AirRaidAPIResponse>>() {});
+                .body(new ParameterizedTypeReference<List<Alert>>() {});
 
+        log.info("City id: {}", properties.regionId());
         if (responseList == null) {
             System.err.println("Error: Failed to get valid response list");
             airRaidCache.put("STATUS", AirRaidStatus.UNKNOWN);
             return;
         }
-
-        AirRaidAPIResponse response = responseList.getFirst();
-
+        Alert response = responseList.getFirst();
         if (response == null) {
-            System.err.println("Error: Failed to get valid response");
+            log.error("Failed to get valid response");
             airRaidCache.put("STATUS", AirRaidStatus.UNKNOWN);
             return;
         }
         if (response.activeAlerts() == null) {
-            System.err.println("Error: Failed to get valid response with alertLevels");
+            log.error("Failed to get valid response with alertLevels");
             airRaidCache.put("STATUS", AirRaidStatus.UNKNOWN);
             return;
         }
-        List<AirRaidAlert> activeAlerts = response.activeAlerts();
+        List<Alert.AlertLevelWithReason> activeAlerts = response.activeAlerts();
         boolean changed = false;
         for (var a : activeAlerts) {
-            if (a.alertLevel().equals("RED")) {
+            log.info("{}", a);
+            if (a.().equals("RED")) {
                 airRaidCache.put("STATUS", AirRaidStatus.RED);
                 return;
             }
