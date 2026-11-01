@@ -125,13 +125,14 @@ public class OpenMeteoMapper {
 
         var current = response.current();
         var daily = response.daily();
-        return WeatherDailyDto.builder()
+        WeatherDailyDto.Report report = WeatherDailyDto.Report.builder()
                 .currentTempCelsius(current.currentTempCelsius())
                 .apparentTempCelsius(current.apparentTempCelsius())
                 .maxTempCelsius(daily.maxTempCelsius().getFirst())
                 .minTempCelsius(daily.minTempCelsius().getFirst())
                 .weatherCode(current.descriptionCode())
-                .isStale(false)
                 .build();
+
+        return WeatherDailyDto.builder().report(report).isStale(false).build();
     }
 }

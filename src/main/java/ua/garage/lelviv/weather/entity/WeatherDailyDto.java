@@ -6,14 +6,17 @@ import lombok.With;
 
 @Builder
 public record WeatherDailyDto(
-        @JsonProperty("current_temperature_celsius") Double currentTempCelsius,
+        Report report, @JsonProperty("is_stale") @With Boolean isStale) {
 
-        @JsonProperty("apparent_temperature_celsius") Double apparentTempCelsius,
+    @Builder
+    public record Report(
+            @JsonProperty("current_temperature_celsius") Double currentTempCelsius,
 
-        @JsonProperty("max_temperature_celsius") Double maxTempCelsius,
+            @JsonProperty("apparent_temperature_celsius") Double apparentTempCelsius,
 
-        @JsonProperty("min_temperature_celsius") Double minTempCelsius,
+            @JsonProperty("max_temperature_celsius") Double maxTempCelsius,
 
-        @JsonProperty("weather_code") Short weatherCode,
+            @JsonProperty("min_temperature_celsius") Double minTempCelsius,
 
-        @JsonProperty("is_stale") @With Boolean isStale) {}
+            @JsonProperty("weather_code") Short weatherCode) {}
+}
