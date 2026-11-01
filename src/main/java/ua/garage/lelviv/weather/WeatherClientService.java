@@ -16,7 +16,10 @@ public class WeatherClientService {
     private final WeatherProvider weatherProvider;
     private final WeatherFallbackStore weatherFallbackStore;
 
-    @Cacheable(value = "#{@weatherCacheProperties.hourly().name()}", key = "'hourly_' + #region")
+    @Cacheable(
+            value = "#{@weatherCacheProperties.hourly().name()}",
+            key = "'hourly_' + #region",
+            unless = "#result == null || #result.isStale == true")
     @CircuitBreaker(name = "weather-client-service", fallbackMethod = "getWeatherHourlyProtectedFallback")
     public WeatherHourlyDto getWeatherHourlyProtected(Coordinates coordinates, String region) {
         WeatherHourlyDto dto = weatherProvider.fetchWeatherHourly(coordinates.latitude(), coordinates.longitude());
@@ -34,7 +37,10 @@ public class WeatherClientService {
                         "Погодинний прогноз погоди тимчасово недоступний для регіону: " + region));
     }
 
-    @Cacheable(value = "#{@weatherCacheProperties.weekly().name()}", key = "'weekly_' + #region")
+    @Cacheable(
+            value = "#{@weatherCacheProperties.weekly().name()}",
+            key = "'weekly_' + #region",
+            unless = "#result == null || #result.isStale == true")
     @CircuitBreaker(name = "weather-client-service", fallbackMethod = "getWeatherWeeklyProtectedFallback")
     public WeatherWeeklyDto getWeatherWeeklyProtected(Coordinates coordinates, String region) {
         WeatherWeeklyDto dto = weatherProvider.fetchWeatherWeekly(coordinates.latitude(), coordinates.longitude());
@@ -52,7 +58,10 @@ public class WeatherClientService {
                         "Тижневий прогноз погоди тимчасово недоступний для регіону: " + region));
     }
 
-    @Cacheable(value = "#{@weatherCacheProperties.daily().name()}", key = "'daily_' + #region")
+    @Cacheable(
+            value = "#{@weatherCacheProperties.daily().name()}",
+            key = "'daily_' + #region",
+            unless = "#result == null || #result.isStale == true")
     @CircuitBreaker(name = "weather-client-service", fallbackMethod = "getWeatherDailyProtectedFallback")
     public WeatherDailyDto getWeatherDailyProtected(Coordinates coordinates, String region) {
         WeatherDailyDto dto = weatherProvider.fetchWeatherDaily(coordinates.latitude(), coordinates.longitude());

@@ -1,30 +1,38 @@
 package ua.garage.lelviv.weather.provider.openMeteo;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.IntStream;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import ua.garage.lelviv.weather.config.WeatherBaseProperties;
 import ua.garage.lelviv.weather.entity.*;
+import ua.garage.lelviv.weather.exception.WeatherProviderException;
 import ua.garage.lelviv.weather.provider.openMeteo.response.OpenMeteoDailyResponse;
 import ua.garage.lelviv.weather.provider.openMeteo.response.OpenMeteoHourlyResponse;
 import ua.garage.lelviv.weather.provider.openMeteo.response.OpenMeteoWeeklyResponse;
 
 @Component
+@RequiredArgsConstructor
 public class OpenMeteoMapper {
 
+    private final WeatherBaseProperties weatherBaseProperties;
+
     public WeatherHourlyDto toWeatherHourlyDto(OpenMeteoHourlyResponse response) {
-        if (response == null || response.hourly() == null) {
-            return WeatherHourlyDto.builder()
-                    .reports(Collections.emptyList())
-                    .isStale(true)
-                    .build();
+        if (response == null
+                || response.hourly() == null
+                || response.hourly().times() == null
+                || response.hourly().tempCelsius() == null
+                || response.hourly().apparentTempCelsius() == null
+                || response.hourly().precipitationProbPercent() == null
+                || response.hourly().descriptionCodes() == null) {
+            throw new WeatherProviderException("Open-Meteo hourly response is invalid or empty");
         }
 
         var hourly = response.hourly();
-        List<LocalTime> times = hourly.times();
+        List<LocalDateTime> times = hourly.times();
         List<Double> tempCelsius = hourly.tempCelsius();
         List<Double> apparentTempCelsius = hourly.apparentTempCelsius();
         List<Short> precipitationProbPercent = hourly.precipitationProbPercent();
@@ -39,7 +47,8 @@ public class OpenMeteoMapper {
                 .min()
                 .orElse(0);
 
-        LocalTime currentHour = LocalTime.now().truncatedTo(ChronoUnit.HOURS);
+        LocalDateTime currentHour =
+                LocalDateTime.now(weatherBaseProperties.defaultTimezone()).truncatedTo(ChronoUnit.HOURS);
         int startIndex = IntStream.range(0, minSize)
                 .filter(i -> !times.get(i).isBefore(currentHour))
                 .findFirst()
@@ -61,11 +70,14 @@ public class OpenMeteoMapper {
     }
 
     public WeatherWeeklyDto toWeatherWeeklyDto(OpenMeteoWeeklyResponse response) {
-        if (response == null || response.weekly() == null) {
-            return WeatherWeeklyDto.builder()
-                    .reports(Collections.emptyList())
-                    .isStale(true)
-                    .build();
+        if (response == null
+                || response.weekly() == null
+                || response.weekly().times() == null
+                || response.weekly().maxTempCelsius() == null
+                || response.weekly().minTempCelsius() == null
+                || response.weekly().maxPrecipitationProbPercent() == null
+                || response.weekly().descriptionCodes() == null) {
+            throw new WeatherProviderException("Open-Meteo weekly response is invalid or empty");
         }
 
         var weekly = response.weekly();
@@ -98,8 +110,17 @@ public class OpenMeteoMapper {
     }
 
     public WeatherDailyDto toWeatherDailyDto(OpenMeteoDailyResponse response) {
-        if (response == null || response.current() == null || response.daily() == null) {
-            return WeatherDailyDto.builder().isStale(true).build();
+        if (response == null
+                || response.current() == null
+                || response.daily() == null
+                || response.current().currentTempCelsius() == null
+                || response.current().apparentTempCelsius() == null
+                || response.current().descriptionCode() == null
+                || response.daily().maxTempCelsius() == null
+                || response.daily().maxTempCelsius().isEmpty()
+                || response.daily().minTempCelsius() == null
+                || response.daily().minTempCelsius().isEmpty()) {
+            throw new WeatherProviderException("Open-Meteo daily response is invalid or empty");
         }
 
         var current = response.current();

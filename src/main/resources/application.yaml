@@ -8,6 +8,7 @@ spring:
 app:
   weather:
     base-errors-url: "https://lelviv.pp.ua/errors"
+    default-timezone: "Europe/Kyiv"
 
     provider:
       open-meteo:
@@ -67,7 +68,7 @@ app:
           sliding-window-size: 10
           failure-rate-threshold: 50
           wait-duration-in-open-state: 10s
-          permitted-number-of-calls-in-half-open-state: 3
+          permitted-calls-in-half-open: 3
           automatic-transition-from-open-to-half-open-enabled: true
 
         open-meteo:

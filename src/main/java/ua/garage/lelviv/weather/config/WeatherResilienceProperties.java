@@ -1,7 +1,7 @@
 package ua.garage.lelviv.weather.config;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Positive;
 import java.time.Duration;
 import java.util.Map;
@@ -12,10 +12,11 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 @ConfigurationProperties(prefix = "app.weather.resilience")
 public record WeatherResilienceProperties(
-        @NotNull @Valid Map<String, CircuitBreakerProp> circuitBreaker,
+        @NotEmpty Map<String, @Valid CircuitBreakerProp> circuitBreaker,
 
-        @NotNull @Valid Map<String, RetryProp> retry) {
+        @NotEmpty Map<String, @Valid RetryProp> retry) {
 
+    @Validated
     public record CircuitBreakerProp(
             @Positive @DefaultValue("10") Integer slidingWindowSize,
 
@@ -27,6 +28,7 @@ public record WeatherResilienceProperties(
 
             @DefaultValue("true") Boolean automaticTransitionFromOpenToHalfOpenEnabled) {}
 
+    @Validated
     public record RetryProp(
             @Positive @DefaultValue("3") Integer maxAttempts,
 

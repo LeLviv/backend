@@ -20,8 +20,8 @@ public class OpenMeteoProvider implements WeatherProvider {
     private final OpenMeteoMapper openMeteoMapper;
 
     @Override
-    @Retry(name = "open-meteo")
     @CircuitBreaker(name = "open-meteo")
+    @Retry(name = "open-meteo")
     public WeatherHourlyDto fetchWeatherHourly(Double latitude, Double longitude) {
         OpenMeteoHourlyResponse response = openMeteoRestClient
                 .get()
@@ -41,8 +41,8 @@ public class OpenMeteoProvider implements WeatherProvider {
     }
 
     @Override
-    @Retry(name = "open-meteo")
     @CircuitBreaker(name = "open-meteo")
+    @Retry(name = "open-meteo")
     public WeatherWeeklyDto fetchWeatherWeekly(Double latitude, Double longitude) {
         OpenMeteoWeeklyResponse response = openMeteoRestClient
                 .get()
@@ -62,8 +62,8 @@ public class OpenMeteoProvider implements WeatherProvider {
     }
 
     @Override
-    @Retry(name = "open-meteo")
     @CircuitBreaker(name = "open-meteo")
+    @Retry(name = "open-meteo")
     public WeatherDailyDto fetchWeatherDaily(Double latitude, Double longitude) {
         OpenMeteoDailyResponse response = openMeteoRestClient
                 .get()

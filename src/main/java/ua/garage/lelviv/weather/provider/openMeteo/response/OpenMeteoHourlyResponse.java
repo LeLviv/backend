@@ -2,7 +2,7 @@ package ua.garage.lelviv.weather.provider.openMeteo.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -10,7 +10,7 @@ public record OpenMeteoHourlyResponse(Hourly hourly) {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Hourly(
-            @JsonProperty("time") List<LocalTime> times,
+            @JsonProperty("time") List<LocalDateTime> times,
 
             @JsonProperty("temperature_2m") List<Double> tempCelsius,
 

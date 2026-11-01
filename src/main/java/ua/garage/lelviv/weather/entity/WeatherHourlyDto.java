@@ -2,7 +2,7 @@ package ua.garage.lelviv.weather.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Builder;
 import lombok.With;
@@ -15,7 +15,7 @@ public record WeatherHourlyDto(
 
     @Builder
     public record Report(
-            @JsonFormat(pattern = "HH:mm") LocalTime time,
+            @JsonFormat(pattern = "HH:mm") LocalDateTime time,
 
             @JsonProperty("temperature_celsius") Double tempCelsius,
 

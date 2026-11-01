@@ -20,12 +20,6 @@ public class WeatherClientConfig {
         return createRestClient(config);
     }
 
-    @Bean
-    public RestClient openWeatherRestClient(WeatherProvidersProperties properties) {
-        var config = properties.provider().get("open-weather");
-        return createRestClient(config);
-    }
-
     private RestClient createRestClient(WeatherProvidersProperties.ProviderConfig config) {
         var httpClient =
                 HttpClient.newBuilder().connectTimeout(config.connectTimeout()).build();

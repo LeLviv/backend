@@ -23,7 +23,7 @@ public class WeatherResilienceConfig {
                     .failureRateThreshold(prop.failureRateThreshold())
                     .waitDurationInOpenState(prop.waitDurationInOpenState())
                     .permittedNumberOfCallsInHalfOpenState(prop.permittedCallsInHalfOpen())
-                    .automaticTransitionFromOpenToHalfOpenEnabled(true)
+                    .automaticTransitionFromOpenToHalfOpenEnabled(prop.automaticTransitionFromOpenToHalfOpenEnabled())
                     .build();
 
             registry.circuitBreaker(name, config);

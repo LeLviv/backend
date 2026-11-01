@@ -6,7 +6,9 @@ import jakarta.validation.constraints.NotNull;
 import java.time.Duration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.bind.DefaultValue;
+import org.springframework.validation.annotation.Validated;
 
+@Validated
 @ConfigurationProperties(prefix = "app.weather.cache")
 public record WeatherCacheProperties(
         @NotNull @Valid CacheProp daily,
@@ -17,6 +19,7 @@ public record WeatherCacheProperties(
 
         @NotNull @Valid CacheProp fallback) {
 
+    @Validated
     public record CacheProp(
             @NotBlank String name,
 

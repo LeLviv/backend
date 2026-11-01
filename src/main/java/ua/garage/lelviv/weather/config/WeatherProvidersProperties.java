@@ -2,6 +2,7 @@ package ua.garage.lelviv.weather.config;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import java.time.Duration;
 import java.util.Map;
@@ -12,10 +13,11 @@ import org.springframework.validation.annotation.Validated;
 
 @Validated
 @ConfigurationProperties(prefix = "app.weather")
-public record WeatherProvidersProperties(@NotNull @Valid Map<String, ProviderConfig> provider) {
+public record WeatherProvidersProperties(@NotEmpty Map<String, @Valid ProviderConfig> provider) {
 
+    @Validated
     public record ProviderConfig(
-            boolean enabled,
+            @DefaultValue("false") Boolean enabled,
 
             @NotBlank(message = "Name is required") String name,
 
