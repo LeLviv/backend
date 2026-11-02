@@ -39,7 +39,6 @@ public class WeatherResilienceConfig {
         properties.retry().forEach((name, prop) -> {
             var config = RetryConfig.custom()
                     .maxAttempts(prop.maxAttempts())
-                    .waitDuration(prop.waitDuration())
                     .intervalFunction(IntervalFunction.ofExponentialBackoff(
                             prop.waitDuration(), prop.exponentialBackoffMultiplier()))
                     .build();

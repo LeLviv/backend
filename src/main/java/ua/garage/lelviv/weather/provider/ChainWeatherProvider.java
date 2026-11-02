@@ -21,6 +21,10 @@ public class ChainWeatherProvider implements WeatherProvider {
     @Override
     public WeatherHourlyDto fetchWeatherHourly(Double latitude, Double longitude) {
         for (WeatherProvider provider : providers) {
+            if (provider == this) {
+                continue;
+            }
+
             try {
                 log.info(
                         "Executing hourly weather request via [{}]",

@@ -17,6 +17,7 @@ public class WeatherClientService {
     private final WeatherFallbackStore weatherFallbackStore;
 
     @Cacheable(
+            cacheManager = "weatherCacheManager",
             value = "#{@weatherCacheProperties.hourly().name()}",
             key = "'hourly_' + #region",
             unless = "#result == null || #result.isStale == true")
@@ -38,6 +39,7 @@ public class WeatherClientService {
     }
 
     @Cacheable(
+            cacheManager = "weatherCacheManager",
             value = "#{@weatherCacheProperties.weekly().name()}",
             key = "'weekly_' + #region",
             unless = "#result == null || #result.isStale == true")
@@ -59,6 +61,7 @@ public class WeatherClientService {
     }
 
     @Cacheable(
+            cacheManager = "weatherCacheManager",
             value = "#{@weatherCacheProperties.daily().name()}",
             key = "'daily_' + #region",
             unless = "#result == null || #result.isStale == true")

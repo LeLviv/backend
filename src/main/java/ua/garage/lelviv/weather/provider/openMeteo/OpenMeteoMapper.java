@@ -47,6 +47,10 @@ public class OpenMeteoMapper {
                 .min()
                 .orElse(0);
 
+        if (minSize == 0) {
+            throw new WeatherProviderException("Open-Meteo hourly response list is empty");
+        }
+
         LocalDateTime currentHour =
                 LocalDateTime.now(weatherBaseProperties.defaultTimezone()).truncatedTo(ChronoUnit.HOURS);
         int startIndex = IntStream.range(0, minSize)
@@ -95,6 +99,10 @@ public class OpenMeteoMapper {
                         weatherCodes.size())
                 .min()
                 .orElse(0);
+
+        if (minSize == 0) {
+            throw new WeatherProviderException("Open-Meteo weekly response list is empty");
+        }
 
         List<WeatherWeeklyDto.Report> reports = IntStream.range(0, minSize)
                 .mapToObj(i -> WeatherWeeklyDto.Report.builder()

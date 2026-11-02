@@ -15,7 +15,8 @@ public record WeatherHourlyDto(
 
     @Builder
     public record Report(
-            @JsonFormat(pattern = "HH:mm") LocalDateTime time,
+            @JsonProperty("time") @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+            LocalDateTime time,
 
             @JsonProperty("temperature_celsius") Double tempCelsius,
 
