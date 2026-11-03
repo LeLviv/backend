@@ -25,8 +25,10 @@ public class WeatherProvidersConfig {
             havingValue = "true",
             matchIfMissing = true)
     public WeatherProvider openMeteoProvider(
-            @Qualifier("openMeteoRestClient") RestClient restClient, OpenMeteoMapper openMeteoMapper) {
+            WeatherBaseProperties weatherBaseProperties,
+            @Qualifier("openMeteoRestClient") RestClient restClient,
+            OpenMeteoMapper openMeteoMapper) {
         log.info("Initializing OpenMeteoProvider Bean");
-        return new OpenMeteoProvider(restClient, openMeteoMapper);
+        return new OpenMeteoProvider(weatherBaseProperties, restClient, openMeteoMapper);
     }
 }

@@ -2,6 +2,7 @@ package ua.garage.lelviv.weather.provider.openMeteo;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -51,8 +52,8 @@ public class OpenMeteoMapper {
             throw new WeatherProviderException("Open-Meteo hourly response list is empty");
         }
 
-        LocalDateTime currentHour =
-                LocalDateTime.now(weatherBaseProperties.defaultTimezone()).truncatedTo(ChronoUnit.HOURS);
+        LocalDateTime currentHour = LocalDateTime.now(ZoneId.of(weatherBaseProperties.defaultTimezone()))
+                .truncatedTo(ChronoUnit.HOURS);
         int startIndex = IntStream.range(0, minSize)
                 .filter(i -> !times.get(i).isBefore(currentHour))
                 .findFirst()

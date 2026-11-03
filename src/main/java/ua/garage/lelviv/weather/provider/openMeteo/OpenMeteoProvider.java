@@ -5,6 +5,7 @@ import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.client.RestClient;
+import ua.garage.lelviv.weather.config.WeatherBaseProperties;
 import ua.garage.lelviv.weather.entity.*;
 import ua.garage.lelviv.weather.provider.WeatherProvider;
 import ua.garage.lelviv.weather.provider.openMeteo.response.OpenMeteoDailyResponse;
@@ -13,6 +14,8 @@ import ua.garage.lelviv.weather.provider.openMeteo.response.OpenMeteoWeeklyRespo
 
 @RequiredArgsConstructor
 public class OpenMeteoProvider implements WeatherProvider {
+
+    private final WeatherBaseProperties weatherBaseProperties;
 
     @Qualifier("openMeteoRestClient")
     private final RestClient openMeteoRestClient;
@@ -32,7 +35,7 @@ public class OpenMeteoProvider implements WeatherProvider {
                         .queryParam(
                                 "hourly", "temperature_2m,apparent_temperature,precipitation_probability,weather_code")
                         .queryParam("forecast_days", 2)
-                        .queryParam("timezone", "Europe/Kyiv")
+                        .queryParam("timezone", weatherBaseProperties.defaultTimezone())
                         .build())
                 .retrieve()
                 .body(OpenMeteoHourlyResponse.class);
@@ -53,7 +56,7 @@ public class OpenMeteoProvider implements WeatherProvider {
                         .queryParam(
                                 "daily",
                                 "weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max")
-                        .queryParam("timezone", "Europe/Kyiv")
+                        .queryParam("timezone", weatherBaseProperties.defaultTimezone())
                         .build())
                 .retrieve()
                 .body(OpenMeteoWeeklyResponse.class);
@@ -74,7 +77,7 @@ public class OpenMeteoProvider implements WeatherProvider {
                         .queryParam("daily", "temperature_2m_max,temperature_2m_min")
                         .queryParam("current", "weather_code,temperature_2m,apparent_temperature")
                         .queryParam("forecast_days", 1)
-                        .queryParam("timezone", "Europe/Kyiv")
+                        .queryParam("timezone", weatherBaseProperties.defaultTimezone())
                         .build())
                 .retrieve()
                 .body(OpenMeteoDailyResponse.class);
