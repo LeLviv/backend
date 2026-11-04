@@ -29,6 +29,11 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - name: Add firebase secret key to project
+        run: |
+          mkdir -p src/main/resources
+          echo "${{ secrets.FIREBASE_SECRET }}" >> src/main/resources/firebase-service-account.json
+
       - uses: actions/setup-java@v6
         with:
           distribution: temurin
