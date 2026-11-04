@@ -4,11 +4,9 @@ import com.github.benmanes.caffeine.cache.Cache;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
@@ -56,8 +54,7 @@ public class AirRaidService {
                 .uri("/v3/alerts/" + properties.regionId())
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
-                .body(new ParameterizedTypeReference<>() {
-                });
+                .body(new ParameterizedTypeReference<>() {});
 
         if (responseList == null) {
             log.error("Error: Failed to get valid response list");
