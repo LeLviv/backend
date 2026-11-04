@@ -16,8 +16,6 @@ import ua.garage.lelviv.air_raid.entities.AlertType;
 @EnableConfigurationProperties(AirRaidProperties.class)
 @EnableCaching
 public class AirRaidConfig {
-    public static final String lvivUID = "845";
-
     @Bean
     public Cache<AlertType, AlertStatus> airRaidCache() {
         return Caffeine.newBuilder().maximumSize(64).build();
