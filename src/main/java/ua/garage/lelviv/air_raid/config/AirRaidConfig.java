@@ -1,4 +1,4 @@
-package ua.garage.lelviv.air_raid;
+package ua.garage.lelviv.air_raid.config;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
@@ -9,6 +9,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestClient;
+import ua.garage.lelviv.air_raid.entities.AlertStatus;
+import ua.garage.lelviv.air_raid.entities.AlertType;
 
 @Configuration
 @EnableConfigurationProperties(AirRaidProperties.class)
@@ -17,7 +19,7 @@ public class AirRaidConfig {
     public static final String lvivUID = "845";
 
     @Bean
-    public Cache<String, AirRaidStatus> airRaidCache() {
+    public Cache<AlertType, AlertStatus> airRaidCache() {
         return Caffeine.newBuilder().maximumSize(64).build();
     }
 

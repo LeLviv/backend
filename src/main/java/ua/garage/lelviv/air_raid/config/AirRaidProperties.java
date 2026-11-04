@@ -1,4 +1,4 @@
-package ua.garage.lelviv.air_raid;
+package ua.garage.lelviv.air_raid.config;
 
 import jakarta.validation.constraints.NotBlank;
 import org.hibernate.validator.constraints.URL;

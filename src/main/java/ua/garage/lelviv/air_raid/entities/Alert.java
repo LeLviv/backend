@@ -1,4 +1,4 @@
-package ua.garage.lelviv.air_raid;
+package ua.garage.lelviv.air_raid.entities;
 
 import java.util.List;
 
@@ -13,6 +13,7 @@ public record Alert(
     public record AlertLevelWithReason(
             String regionId,
             String regionType,
+            String type,
             String regionEngName,
             String lastUpdate,
             List<AlertLevel> activeAlertLevels) {}

@@ -1,6 +1,7 @@
 package ua.garage.lelviv.air_raid;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -8,12 +9,13 @@ import org.springframework.stereotype.Service;
 @Service
 @ConditionalOnProperty(name = "app.air-raid.api-query-enabled", havingValue = "true")
 @RequiredArgsConstructor
+@Slf4j
 public class AirRaidScheduledQuery {
     private final AirRaidService service;
 
     @Scheduled(fixedDelay = 61000)
     public void scheduledUpdate() {
-        System.out.println("Updating air raid status from official API");
+        log.info("Querying air raid status");
         service.updateAirRaidStatus();
     }
 }

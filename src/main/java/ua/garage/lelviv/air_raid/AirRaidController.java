@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ua.garage.lelviv.air_raid.entities.AlertStatus;
+import ua.garage.lelviv.air_raid.entities.AlertType;
 
 @RestController
 @RequestMapping("/api/v1/air-raid")
@@ -13,8 +15,9 @@ public class AirRaidController {
 
     @PostMapping("/set")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void setAirRaidStatus(@RequestParam(name = "status") AirRaidStatus status) {
-        service.setStatus(status);
+    public void setAirRaidStatus(
+            @RequestParam(name = "type") AlertType type, @RequestParam(name = "status") AlertStatus status) {
+        service.setStatus(type, status);
     }
 
     @PostMapping("/update-official")
@@ -23,10 +26,15 @@ public class AirRaidController {
         service.updateAirRaidStatus();
     }
 
+    @PostMapping("/send-notification")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void sendNotification() {
+        service.sendNotification(AlertType.AIR);
+    }
+
     @GetMapping
     public ResponseEntity<String> getAirRaidStatus() {
-        AirRaidStatus s = service.getStatus();
-        System.out.println("Querying air raid status " + s);
+        AlertStatus s = service.getStatus(AlertType.AIR);
         if (s == null) {
             return ResponseEntity.notFound().build();
         }
