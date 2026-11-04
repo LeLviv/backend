@@ -56,7 +56,7 @@ public class AirRaidService {
                 .uri("/v3/alerts/" + properties.regionId())
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
-                .body(new ParameterizedTypeReference<List<Alert>>() {
+                .body(new ParameterizedTypeReference<>() {
                 });
 
         if (responseList == null) {
