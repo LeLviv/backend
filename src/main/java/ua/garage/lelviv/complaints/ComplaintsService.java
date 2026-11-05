@@ -4,17 +4,15 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
-import ua.garage.lelviv.authorization.entities.Role;
-import ua.garage.lelviv.authorization.entities.UserRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -22,18 +20,24 @@ public class ComplaintsService {
     private final ComplaintRepository repository;
 
     private static final String UPLOAD_DIR = "uploads/complaints/";
-    private final UserRepository userRepository;
 
     public ComplaintResponse processComplaint(ComplaintRequest complaintRequest, String username) {
         String photoUrl = null;
         MultipartFile photo = complaintRequest.getPhoto();
 
         if (photo != null && !photo.isEmpty()) {
+            String contentType = photo.getContentType();
+            if (contentType == null || !contentType.startsWith("image/")) {
+                throw new IllegalArgumentException("Дозволено завантажувати лише зображення");
+            }
+
             try {
-                String originalFileName = photo.getOriginalFilename();
+                String originalFilename = photo.getOriginalFilename();
+
                 String extension = "";
-                if (originalFileName != null && originalFileName.contains(".")) {
-                    extension = originalFileName.substring(originalFileName.lastIndexOf("."));
+                if (StringUtils.hasText(originalFilename)) {
+                    String ext = org.springframework.util.StringUtils.getFilenameExtension(originalFilename);
+                    extension = ext != null ? "." + ext : "";
                 }
 
                 String fileName = UUID.randomUUID() + extension;
@@ -60,34 +64,15 @@ public class ComplaintsService {
         return new ComplaintResponse("Скаргу успішно подано");
     }
 
-    public List<Complaint> getComplaints(String username) {
-        var user = userRepository
-                .findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Користувача не знайдено"));
-
-        var userRole = user.getRole();
-
-        if (userRole != Role.ADMIN) {
-            throw new AccessDeniedException("Тільки адміни мають право переглядати скарги");
-        }
-
-        return repository.findAll();
+    public Page<Complaint> getComplaints(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        return repository.findAll(pageable);
     }
 
-    public Complaint getComplaint(String username, Long id) {
-        var user = userRepository
-                .findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Користувача не знайдено"));
-
-        var userRole = user.getRole();
-
-        if (userRole != Role.ADMIN) {
-            throw new AccessDeniedException("Тільки адміни мають право переглядати скарги");
-        }
-
+    public Complaint getComplaint(Long id) {
         return repository
                 .findById(id)
-                .orElseThrow(
-                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Скаргу з ID " + id + " не знайдено"));
+                .orElseThrow(() -> new ComplaintFindException("Скаргу з ID " + id + " не знайдено"));
     }
 }
+
