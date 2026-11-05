@@ -75,4 +75,3 @@ public class ComplaintsService {
                 .orElseThrow(() -> new ComplaintFindException("Скаргу з ID " + id + " не знайдено"));
     }
 }
-

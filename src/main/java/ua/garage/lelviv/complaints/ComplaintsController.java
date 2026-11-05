@@ -35,4 +35,3 @@ public class ComplaintsController {
         return ResponseEntity.ok(service.getComplaint(id));
     }
 }
-
