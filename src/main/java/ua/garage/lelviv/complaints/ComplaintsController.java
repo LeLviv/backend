@@ -2,10 +2,11 @@ package ua.garage.lelviv.complaints;
 
 import jakarta.validation.Valid;
 import java.security.Principal;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,15 +22,16 @@ public class ComplaintsController {
         return ResponseEntity.ok(service.processComplaint(request, username));
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping
-    public ResponseEntity<List<Complaint>> getComplaints(Principal principal) {
-        String username = principal.getName();
-        return ResponseEntity.ok(service.getComplaints(username));
+    public ResponseEntity<Page<Complaint>> getComplaints(
+            @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size) {
+        return ResponseEntity.ok(service.getComplaints(page, size));
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/{id}")
-    public ResponseEntity<Complaint> getComplaint(Principal principal, @PathVariable Long id) {
-        String username = principal.getName();
-        return ResponseEntity.ok(service.getComplaint(username, id));
+    public ResponseEntity<Complaint> getComplaint(@PathVariable Long id) {
+        return ResponseEntity.ok(service.getComplaint(id));
     }
 }

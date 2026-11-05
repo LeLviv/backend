@@ -22,7 +22,6 @@ public class Complaint {
     @NonNull
     private String problem;
 
-    @Column(name = "photoPath")
     private String photoPath;
 
     private Double latitude;

@@ -1,0 +1,1 @@
+ALTER TABLE complaints RENAME COLUMN photopath TO photo_path;
