@@ -5,9 +5,11 @@ spring:
       jwt:
         secret-key: ${JWT_SECRET_KEY}
 
+    exception:
+      base-errors-url: "https://lelviv.pp.ua/errors"
+
 app:
   weather:
-    base-errors-url: "https://lelviv.pp.ua/errors"
     default-timezone: "Europe/Kyiv"
 
     provider:

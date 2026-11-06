@@ -9,5 +9,4 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 @ConfigurationProperties(prefix = "app.weather")
 public record WeatherBaseProperties(
-        @NotNull @URL String baseErrorsUrl,
         @DefaultValue("Europe/Kyiv") String defaultTimezone) {}
