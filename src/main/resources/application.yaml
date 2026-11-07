@@ -6,9 +6,13 @@ spring:
         secret-key: ${JWT_SECRET_KEY}
 app:
   air-raid:
+    time-zone: "Europe/Kyiv"
+    send-notification-on-update: true
     api-query-enabled: true
-    region-id: "1293"
+    region-id: ${REGION_ID:845}
     base-url: "https://api.ukrainealarm.com/api"
     secret-key: ${AIR_RAID_API_TOKEN}
+    cron: "0 * * * * *"
   firebase:
-    secret-key: ${FIREBASE_SECRET}
+    credentials:
+      json: ${FIREBASE_CREDENTIALS_JSON}

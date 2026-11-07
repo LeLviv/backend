@@ -4,6 +4,9 @@ import com.github.benmanes.caffeine.cache.Cache;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,14 +38,15 @@ public class AirRaidService {
         Map<String, String> payload = new HashMap<>();
         payload.put("type", type.name());
         payload.put("status", status.name());
-
+        payload.put(
+                "time",
+                LocalDateTime.now(ZoneId.of(properties.timeZone())).format(DateTimeFormatter.ofPattern("HH:mm")));
         Message message =
                 Message.builder().setTopic("air_raid_alert").putAllData(payload).build();
-
         try {
-            log.debug("Sending notification to Firebase");
+            log.info("Sending notification to Firebase");
             String response = FirebaseMessaging.getInstance().send(message);
-            log.debug("Received answer: {}", response);
+            log.info("Received answer: {}", response);
         } catch (FirebaseMessagingException e) {
             log.error("Error during FCM sending: {}", e.getMessage());
         }
@@ -73,24 +77,19 @@ public class AirRaidService {
             return;
         }
         List<Alert.AlertLevelWithReason> activeAlerts = response.activeAlerts();
-        for (var activeAlert : activeAlerts) {
+        for (Alert.AlertLevelWithReason activeAlert : activeAlerts) {
             AlertType type = AlertType.valueOf(activeAlert.type());
             AlertStatus current = airRaidCache.getIfPresent(type);
-            AlertStatus updated = AlertStatus.NONE;
-            for (var l : activeAlert.activeAlertLevels()) {
-                if (l.alertLevel().equals("Red")) {
-                    updated = AlertStatus.RED;
-                } else if (l.alertLevel().equals("Yellow") && updated == AlertStatus.NONE) {
-                    updated = AlertStatus.YELLOW;
-                }
-            }
+            AlertStatus updated = AlertStatus.maxLevel(activeAlert.activeAlertLevels().stream()
+                    .map(Alert.AlertLevel::alertLevel)
+                    .toList());
             if (current != updated) {
                 airRaidCache.put(type, updated);
-                if (type == AlertType.AIR) {
+                if (properties.sendNotificationOnUpdate()) {
                     sendNotification(type);
                 }
             }
-            log.info("{}: {}", type, updated);
+            log.debug("Update alert status{}: {}", type, updated);
         }
     }
 

@@ -1,16 +1,24 @@
-package ua.garage.lelviv.air_raid;
+package ua.garage.lelviv.air_raid.controllers;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import ua.garage.lelviv.air_raid.AirRaidService;
 import ua.garage.lelviv.air_raid.entities.AlertStatus;
 import ua.garage.lelviv.air_raid.entities.AlertType;
 
-@RestController
-@RequestMapping("/api/v1/air-raid")
+@Controller
+@Slf4j
 @RequiredArgsConstructor
-public class AirRaidController {
+@RequestMapping("/api/admin/air-raid/")
+@PreAuthorize("hasRole('ADMIN')")
+public class AirRaidAdminController {
     private final AirRaidService service;
 
     @PostMapping("/set")
@@ -30,14 +38,5 @@ public class AirRaidController {
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void sendNotification() {
         service.sendNotification(AlertType.AIR);
-    }
-
-    @GetMapping
-    public ResponseEntity<String> getAirRaidStatus() {
-        AlertStatus s = service.getStatus(AlertType.AIR);
-        if (s == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(s.toString());
     }
 }
