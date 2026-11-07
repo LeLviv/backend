@@ -3,6 +3,7 @@ name: Scan for leaks and load report
 on:
   pull_request:
     branches: ["**"]
+  workflow_dispatch:
 
 jobs:
   scan_leaks:
@@ -22,7 +23,7 @@ jobs:
         with:
           version: "latest"
           redact: "true"
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ""
 
       - name: Upload artifact
         uses: actions/upload-artifact@v6
