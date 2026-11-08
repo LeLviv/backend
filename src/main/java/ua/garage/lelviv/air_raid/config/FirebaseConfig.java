@@ -3,6 +3,10 @@ package ua.garage.lelviv.air_raid.config;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -13,9 +17,13 @@ import org.springframework.context.annotation.Configuration;
 import ua.garage.lelviv.air_raid.exception.FirebaseException;
 
 @Configuration
+@Valid
 @Slf4j
 public class FirebaseConfig {
-    @Value("${firebase.credentials.json}")
+    @NotNull(message = "Firebase credentials are not set")
+    @NotEmpty(message = "Firebase credentials are empty")
+    @Size(min = 20, message = "Firebase credentials are too short")
+    @Value("${app.firebase.credentials.json}")
     private String firebaseCredentialsJson;
 
     @Bean

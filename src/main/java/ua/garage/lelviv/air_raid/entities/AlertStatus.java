@@ -22,7 +22,7 @@ public enum AlertStatus {
         try {
             return AlertStatus.valueOf(level.trim().toUpperCase());
         } catch (IllegalArgumentException | NullPointerException e) {
-            return null;
+            return AlertStatus.UNKNOWN;
         }
     }
 }
