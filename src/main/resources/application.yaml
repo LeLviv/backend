@@ -6,7 +6,7 @@ spring:
         secret-key: ${JWT_SECRET_KEY}
 
     exception:
-      base-errors-url: "https://lelviv.pp.ua/errors"
+      base-errors-url: ${BASE_ERRORS_URL:https://lelviv.pp.ua/errors}
 
 app:
   weather:
