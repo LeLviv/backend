@@ -10,7 +10,7 @@ import org.springframework.validation.annotation.Validated;
 
 @Validated
 @ConfigurationProperties(prefix = "app.air-raid")
-@ConditionalOnProperty(name = "app.air-raid.api-query-enabled", havingValue = "true")
+@ConditionalOnProperty(name = "app.air-raid.enabled", havingValue = "true")
 public record AirRaidProperties(
         @URL(message = "Invalid URL") @NotBlank(message = "Base URL is required")
         String baseUrl,

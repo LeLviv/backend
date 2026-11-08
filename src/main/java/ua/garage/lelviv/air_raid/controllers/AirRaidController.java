@@ -17,7 +17,7 @@ public class AirRaidController {
     public ResponseEntity<String> getAirRaidStatus() {
         AlertStatus s = service.getStatus(AlertType.AIR);
         if (s == null) {
-            return ResponseEntity.internalServerError().build();
+            s = AlertStatus.UNKNOWN;
         }
         return ResponseEntity.ok(s.toString());
     }

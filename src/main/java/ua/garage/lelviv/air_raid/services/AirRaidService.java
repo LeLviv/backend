@@ -1,7 +1,9 @@
 package ua.garage.lelviv.air_raid.services;
 
 import com.github.benmanes.caffeine.cache.Cache;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
@@ -21,7 +23,7 @@ public class AirRaidService {
     private final RestClient airRaidProvider;
     private final Cache<AlertType, AlertStatus> airRaidCache;
     private final AirRaidProperties properties;
-    private NotificationService notificationService;
+    private final NotificationService notificationService;
 
     public void updateAirRaidStatus() {
         List<Alert> responseList = airRaidProvider
@@ -45,26 +47,27 @@ public class AirRaidService {
             throw new AlertStatusUpdateException("Missing activeAlerts from response");
         }
         List<Alert.AlertLevelWithReason> activeAlerts = response.activeAlerts();
-        if (activeAlerts.isEmpty()) {
-            AlertStatus current = airRaidCache.getIfPresent(AlertType.AIR);
-            if (current != AlertStatus.NONE) {
-                airRaidCache.put(AlertType.AIR, AlertStatus.NONE);
-                if (properties.sendNotificationOnUpdate()) {
-                    notificationService.sendNotification(AlertType.AIR, AlertStatus.NONE);
-                }
+
+        Map<AlertType, AlertStatus> activeMap = new EnumMap<>(AlertType.class);
+        for (Alert.AlertLevelWithReason activeAlert : activeAlerts) {
+            AlertType type = AlertType.valueOf(activeAlert.type());
+            AlertStatus updated = AlertStatus.maxLevel(activeAlert.activeAlertLevels().stream()
+                    .map(Alert.AlertLevel::alertLevel)
+                    .toList());
+            activeMap.put(type, updated);
+        }
+
+        for (AlertType type : AlertType.values()) {
+            AlertStatus current = airRaidCache.getIfPresent(type);
+            if (current == null) {
+                current = AlertStatus.NONE;
             }
-        } else {
-            for (Alert.AlertLevelWithReason activeAlert : activeAlerts) {
-                AlertType type = AlertType.valueOf(activeAlert.type());
-                AlertStatus current = airRaidCache.getIfPresent(type);
-                AlertStatus updated = AlertStatus.maxLevel(activeAlert.activeAlertLevels().stream()
-                        .map(Alert.AlertLevel::alertLevel)
-                        .toList());
-                if (current != updated) {
-                    airRaidCache.put(type, updated);
-                    if (properties.sendNotificationOnUpdate()) {
-                        notificationService.sendNotification(type, updated);
-                    }
+            AlertStatus updated = activeMap.getOrDefault(type, AlertStatus.NONE);
+            if (updated != current) {
+                airRaidCache.put(type, updated);
+                if (properties.sendNotificationOnUpdate()
+                        && !(current == AlertStatus.UNKNOWN && updated == AlertStatus.NONE)) {
+                    notificationService.sendNotification(type, updated);
                 }
                 log.info("Updated alert status of type {}: {}", type, updated);
             }
