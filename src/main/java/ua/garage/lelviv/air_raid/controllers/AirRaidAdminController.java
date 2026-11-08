@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import ua.garage.lelviv.air_raid.AirRaidService;
+import ua.garage.lelviv.air_raid.config.AirRaidProperties;
 import ua.garage.lelviv.air_raid.entities.AlertStatus;
 import ua.garage.lelviv.air_raid.entities.AlertType;
 
@@ -20,12 +21,16 @@ import ua.garage.lelviv.air_raid.entities.AlertType;
 @PreAuthorize("hasRole('ADMIN')")
 public class AirRaidAdminController {
     private final AirRaidService service;
+    private final AirRaidProperties properties;
 
     @PostMapping("/set")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void setAirRaidStatus(
             @RequestParam(name = "type") AlertType type, @RequestParam(name = "status") AlertStatus status) {
         service.setStatus(type, status);
+        if (properties.sendNotificationOnUpdate()) {
+            service.sendNotification(type);
+        }
     }
 
     @PostMapping("/update-official")

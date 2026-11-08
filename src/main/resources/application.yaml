@@ -12,7 +12,7 @@ app:
     region-id: ${REGION_ID:845}
     base-url: "https://api.ukrainealarm.com/api"
     secret-key: ${AIR_RAID_API_TOKEN}
-    cron: "0 * * * * *"
+    rate: "70000"
 
   firebase:
     credentials:

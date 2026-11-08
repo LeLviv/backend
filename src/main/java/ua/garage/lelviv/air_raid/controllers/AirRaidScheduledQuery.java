@@ -14,7 +14,7 @@ import ua.garage.lelviv.air_raid.AirRaidService;
 public class AirRaidScheduledQuery {
     private final AirRaidService service;
 
-    @Scheduled(cron = "${app.air-raid.cron:-}")
+    @Scheduled(fixedRateString = "${app.air-raid.rate:61000}")
     public void scheduledUpdate() {
         log.info("Querying air raid status");
         service.updateAirRaidStatus();
