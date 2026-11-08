@@ -3,7 +3,6 @@ package ua.garage.lelviv.air_raid.config;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -14,10 +13,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.validation.annotation.Validated;
 import ua.garage.lelviv.air_raid.exception.FirebaseException;
 
 @Configuration
-@Valid
+@Validated
 @Slf4j
 public class FirebaseConfig {
     @NotNull(message = "Firebase credentials are not set")
