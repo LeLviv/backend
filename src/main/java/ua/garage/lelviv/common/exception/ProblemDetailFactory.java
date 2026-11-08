@@ -1,13 +1,12 @@
 package ua.garage.lelviv.common.exception;
 
+import java.net.URI;
+import java.time.Instant;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import java.net.URI;
-import java.time.Instant;
 
 @Component
 @RequiredArgsConstructor

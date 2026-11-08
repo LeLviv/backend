@@ -5,5 +5,4 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @EnableConfigurationProperties(ExceptionProperties.class)
-public class ExceptionConfiguration {
-}
+public class ExceptionConfiguration {}
