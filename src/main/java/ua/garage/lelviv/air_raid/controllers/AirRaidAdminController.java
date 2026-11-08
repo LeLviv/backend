@@ -10,20 +10,22 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import ua.garage.lelviv.air_raid.AirRaidService;
 import ua.garage.lelviv.air_raid.config.AirRaidProperties;
 import ua.garage.lelviv.air_raid.entities.AlertStatus;
 import ua.garage.lelviv.air_raid.entities.AlertType;
+import ua.garage.lelviv.air_raid.services.AirRaidService;
+import ua.garage.lelviv.air_raid.services.NotificationService;
 
 @Controller
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/api/admin/air-raid/")
-@PreAuthorize("hasRole('ADMIN')")
+@PreAuthorize("hasAuthority('ADMIN')")
 @Validated
 public class AirRaidAdminController {
     private final AirRaidService service;
     private final AirRaidProperties properties;
+    private final NotificationService notificationService;
 
     @PostMapping("/set")
     @ResponseStatus(HttpStatus.ACCEPTED)
@@ -31,7 +33,7 @@ public class AirRaidAdminController {
             @RequestParam(name = "type") AlertType type, @RequestParam(name = "status") AlertStatus status) {
         service.setStatus(type, status);
         if (properties.sendNotificationOnUpdate()) {
-            service.sendNotification(type);
+            notificationService.sendNotification(type, service.getStatus(type));
         }
     }
 
@@ -44,6 +46,6 @@ public class AirRaidAdminController {
     @PostMapping("/send-notification")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void sendNotification() {
-        service.sendNotification(AlertType.AIR);
+        notificationService.sendNotification(AlertType.AIR, service.getStatus(AlertType.AIR));
     }
 }

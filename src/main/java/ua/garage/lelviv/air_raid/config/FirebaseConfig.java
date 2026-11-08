@@ -11,6 +11,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.annotation.Validated;
@@ -19,12 +20,17 @@ import ua.garage.lelviv.air_raid.exception.FirebaseException;
 @Configuration
 @Validated
 @Slf4j
+@ConditionalOnProperty(name = "app.firebase.enabled", havingValue = "true")
 public class FirebaseConfig {
     @NotNull(message = "Firebase credentials are not set")
     @NotEmpty(message = "Firebase credentials are empty")
     @Size(min = 20, message = "Firebase credentials are too short")
     @Value("${app.firebase.credentials.json}")
     private String firebaseCredentialsJson;
+
+    @NotNull
+    @Value("${app.firebase.enabled}")
+    private Boolean enabled;
 
     @Bean
     public FirebaseApp initialize() {

@@ -7,8 +7,8 @@ spring:
 app:
   air-raid:
     time-zone: "Europe/Kyiv"
-    send-notification-on-update: true
-    api-query-enabled: true
+    send-notification-on-update: ${AUTOMATIC_NOTIFICATIONS:false}
+    enabled: ${AIR_RAID_ENABLED:false}
     region-id: ${REGION_ID:845}
     base-url: "https://api.ukrainealarm.com/api"
     connection-timeout: ${AIR_RAID_CONNECTION_TIMEOUT:5000}
@@ -17,6 +17,7 @@ app:
     rate: "70000"
 
   firebase:
+    enabled: ${FIREBASE_ENABLED:false}
     credentials:
       json: ${FIREBASE_CREDENTIALS_JSON}
 

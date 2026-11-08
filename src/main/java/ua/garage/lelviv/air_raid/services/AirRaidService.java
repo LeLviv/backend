@@ -1,15 +1,7 @@
-package ua.garage.lelviv.air_raid;
+package ua.garage.lelviv.air_raid.services;
 
 import com.github.benmanes.caffeine.cache.Cache;
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.FirebaseMessagingException;
-import com.google.firebase.messaging.Message;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
@@ -29,29 +21,7 @@ public class AirRaidService {
     private final RestClient airRaidProvider;
     private final Cache<AlertType, AlertStatus> airRaidCache;
     private final AirRaidProperties properties;
-
-    public void sendNotification(AlertType type) {
-        AlertStatus status = airRaidCache.getIfPresent(type);
-        if (status == null) {
-            log.error("Current status of alert {} is null", type);
-            return;
-        }
-        Map<String, String> payload = new HashMap<>();
-        payload.put("type", type.name());
-        payload.put("status", status.name());
-        payload.put(
-                "time",
-                LocalDateTime.now(ZoneId.of(properties.timeZone())).format(DateTimeFormatter.ofPattern("HH:mm")));
-        Message message =
-                Message.builder().setTopic("air_raid_alert").putAllData(payload).build();
-        try {
-            log.info("Sending notification to Firebase");
-            String response = FirebaseMessaging.getInstance().send(message);
-            log.info("Received answer: {}", response);
-        } catch (FirebaseMessagingException e) {
-            log.error("Error during FCM sending: {}", e.getMessage());
-        }
-    }
+    private NotificationService notificationService;
 
     public void updateAirRaidStatus() {
         List<Alert> responseList = airRaidProvider
@@ -65,11 +35,11 @@ public class AirRaidService {
             airRaidCache.put(AlertType.AIR, AlertStatus.UNKNOWN);
             throw new AlertStatusUpdateException("Missing response");
         }
-        Alert response = responseList.getFirst();
-        if (response == null) {
+        if (responseList.isEmpty()) {
             airRaidCache.put(AlertType.AIR, AlertStatus.UNKNOWN);
             throw new AlertStatusUpdateException("Response is invalid");
         }
+        Alert response = responseList.getFirst();
         if (response.activeAlerts() == null) {
             airRaidCache.put(AlertType.AIR, AlertStatus.UNKNOWN);
             throw new AlertStatusUpdateException("Missing activeAlerts from response");
@@ -77,8 +47,11 @@ public class AirRaidService {
         List<Alert.AlertLevelWithReason> activeAlerts = response.activeAlerts();
         if (activeAlerts.isEmpty()) {
             AlertStatus current = airRaidCache.getIfPresent(AlertType.AIR);
-            if (current != AlertStatus.NONE && properties.sendNotificationOnUpdate()) {
+            if (current != AlertStatus.NONE) {
                 airRaidCache.put(AlertType.AIR, AlertStatus.NONE);
+                if (properties.sendNotificationOnUpdate()) {
+                    notificationService.sendNotification(AlertType.AIR, AlertStatus.NONE);
+                }
             }
         } else {
             for (Alert.AlertLevelWithReason activeAlert : activeAlerts) {
@@ -90,7 +63,7 @@ public class AirRaidService {
                 if (current != updated) {
                     airRaidCache.put(type, updated);
                     if (properties.sendNotificationOnUpdate()) {
-                        sendNotification(type);
+                        notificationService.sendNotification(type, updated);
                     }
                 }
                 log.info("Updated alert status of type {}: {}", type, updated);
