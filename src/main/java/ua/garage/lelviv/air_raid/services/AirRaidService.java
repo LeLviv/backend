@@ -26,12 +26,20 @@ public class AirRaidService {
     private final NotificationService notificationService;
 
     public void updateAirRaidStatus() {
-        List<Alert> responseList = airRaidProvider
-                .get()
-                .uri("/v3/alerts/" + properties.regionId())
-                .accept(MediaType.APPLICATION_JSON)
-                .retrieve()
-                .body(new ParameterizedTypeReference<>() {});
+        List<Alert> responseList = null;
+        try {
+            responseList = airRaidProvider
+                    .get()
+                    .uri("/v3/alerts/" + properties.regionId())
+                    .accept(MediaType.APPLICATION_JSON)
+                    .retrieve()
+                    .body(new ParameterizedTypeReference<>() {});
+        } catch (Exception e) {
+            for (AlertType type : AlertType.values()) {
+                airRaidCache.put(type, AlertStatus.UNKNOWN);
+            }
+            throw new AlertStatusUpdateException("Failed to fetch alerts from API\n" + e);
+        }
 
         if (responseList == null) {
             airRaidCache.put(AlertType.AIR, AlertStatus.UNKNOWN);

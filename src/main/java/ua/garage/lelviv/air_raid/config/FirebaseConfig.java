@@ -3,6 +3,7 @@ package ua.garage.lelviv.air_raid.config;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
+import com.google.firebase.messaging.FirebaseMessaging;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -31,6 +32,11 @@ public class FirebaseConfig {
     @NotNull
     @Value("${app.firebase.enabled}")
     private Boolean enabled;
+
+    @Bean
+    public FirebaseMessaging messaging(FirebaseApp app) {
+        return FirebaseMessaging.getInstance(app);
+    }
 
     @Bean
     public FirebaseApp initialize() {

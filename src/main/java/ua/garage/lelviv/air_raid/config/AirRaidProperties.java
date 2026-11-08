@@ -4,13 +4,11 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.URL;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
 @Validated
 @ConfigurationProperties(prefix = "app.air-raid")
-@ConditionalOnProperty(name = "app.air-raid.enabled", havingValue = "true")
 public record AirRaidProperties(
         @URL(message = "Invalid URL") @NotBlank(message = "Base URL is required")
         String baseUrl,

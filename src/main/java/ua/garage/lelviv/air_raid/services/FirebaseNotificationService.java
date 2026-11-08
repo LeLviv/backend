@@ -22,6 +22,7 @@ import ua.garage.lelviv.air_raid.entities.AlertType;
 @Slf4j
 public class FirebaseNotificationService implements NotificationService {
     private final AirRaidProperties properties;
+    private final FirebaseMessaging messaging;
 
     public void sendNotification(AlertType type, AlertStatus status) {
         if (status == null) {
@@ -38,7 +39,7 @@ public class FirebaseNotificationService implements NotificationService {
                 Message.builder().setTopic("air_raid_alert").putAllData(payload).build();
         try {
             log.info("Sending notification to Firebase");
-            String response = FirebaseMessaging.getInstance().send(message);
+            String response = messaging.send(message);
             log.info("Received answer: {}", response);
         } catch (FirebaseMessagingException e) {
             log.error("Error during FCM sending: {}", e.getMessage());
