@@ -14,12 +14,11 @@ app:
     connection-timeout: ${AIR_RAID_CONNECTION_TIMEOUT:5000}
     read-timeout: ${AIR_RAID_READ_TIMEOUT:10000}
     secret-key: ${AIR_RAID_API_TOKEN}
-    rate: "70000"
+    delay: "61000"
 
   firebase:
     enabled: ${FIREBASE_ENABLED:false}
-    credentials:
-      json: ${FIREBASE_CREDENTIALS_JSON}
+    credentials: ${FIREBASE_CREDENTIALS_JSON}
 
   weather:
     base-errors-url: "https://lelviv.pp.ua/errors"

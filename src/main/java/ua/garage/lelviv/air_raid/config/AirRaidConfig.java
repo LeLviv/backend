@@ -21,7 +21,7 @@ public class AirRaidConfig {
     }
 
     @Bean
-    public RestClient airRaidProvider(AirRaidProperties properties) {
+    public RestClient airRaidRestClient(AirRaidProperties properties) {
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
         factory.setConnectTimeout(properties.connectionTimeout());
         factory.setReadTimeout(properties.readTimeout());

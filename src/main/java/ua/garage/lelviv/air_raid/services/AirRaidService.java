@@ -6,10 +6,8 @@ import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.MediaType;
+import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClient;
 import ua.garage.lelviv.air_raid.config.AirRaidProperties;
 import ua.garage.lelviv.air_raid.entities.Alert;
 import ua.garage.lelviv.air_raid.entities.AlertStatus;
@@ -20,41 +18,13 @@ import ua.garage.lelviv.air_raid.exception.AlertStatusUpdateException;
 @RequiredArgsConstructor
 @Slf4j
 public class AirRaidService {
-    private final RestClient airRaidProvider;
+    private final AirRaidProvider airRaidProvider;
     private final Cache<AlertType, AlertStatus> airRaidCache;
     private final AirRaidProperties properties;
     private final NotificationService notificationService;
 
     public void updateAirRaidStatus() {
-        List<Alert> responseList = null;
-        try {
-            responseList = airRaidProvider
-                    .get()
-                    .uri("/v3/alerts/" + properties.regionId())
-                    .accept(MediaType.APPLICATION_JSON)
-                    .retrieve()
-                    .body(new ParameterizedTypeReference<>() {});
-        } catch (Exception e) {
-            for (AlertType type : AlertType.values()) {
-                airRaidCache.put(type, AlertStatus.UNKNOWN);
-            }
-            throw new AlertStatusUpdateException("Failed to fetch alerts from API\n" + e);
-        }
-
-        if (responseList == null) {
-            airRaidCache.put(AlertType.AIR, AlertStatus.UNKNOWN);
-            throw new AlertStatusUpdateException("Missing response");
-        }
-        if (responseList.isEmpty()) {
-            airRaidCache.put(AlertType.AIR, AlertStatus.UNKNOWN);
-            throw new AlertStatusUpdateException("Response is invalid");
-        }
-        Alert response = responseList.getFirst();
-        if (response.activeAlerts() == null) {
-            airRaidCache.put(AlertType.AIR, AlertStatus.UNKNOWN);
-            throw new AlertStatusUpdateException("Missing activeAlerts from response");
-        }
-        List<Alert.AlertLevelWithReason> activeAlerts = response.activeAlerts();
+        List<Alert.AlertLevelWithReason> activeAlerts = getActiveAlerts();
 
         Map<AlertType, AlertStatus> activeMap = new EnumMap<>(AlertType.class);
         for (Alert.AlertLevelWithReason activeAlert : activeAlerts) {
@@ -67,14 +37,12 @@ public class AirRaidService {
 
         for (AlertType type : AlertType.values()) {
             AlertStatus current = airRaidCache.getIfPresent(type);
-            if (current == null) {
-                current = AlertStatus.NONE;
-            }
+            AlertStatus effectiveCurrent = (current != null) ? current : AlertStatus.NONE;
             AlertStatus updated = activeMap.getOrDefault(type, AlertStatus.NONE);
-            if (updated != current) {
+
+            if (updated != effectiveCurrent) {
                 airRaidCache.put(type, updated);
-                if (properties.sendNotificationOnUpdate()
-                        && !(current == AlertStatus.UNKNOWN && updated == AlertStatus.NONE)) {
+                if (properties.sendNotificationOnUpdate()) {
                     notificationService.sendNotification(type, updated);
                 }
                 log.info("Updated alert status of type {}: {}", type, updated);
@@ -82,8 +50,30 @@ public class AirRaidService {
         }
     }
 
+    private @NonNull List<Alert.AlertLevelWithReason> getActiveAlerts() {
+        List<Alert> responseList = null;
+        try {
+            responseList = airRaidProvider.getAlerts();
+        } catch (Exception e) {
+            throw new AlertStatusUpdateException("Failed to fetch alerts from API\n" + e);
+        }
+
+        if (responseList == null) {
+            throw new AlertStatusUpdateException("Missing response");
+        }
+        if (responseList.isEmpty()) {
+            throw new AlertStatusUpdateException("Response is invalid");
+        }
+        Alert response = responseList.getFirst();
+        if (response.activeAlerts() == null) {
+            throw new AlertStatusUpdateException("Missing activeAlerts from response");
+        }
+        return response.activeAlerts();
+    }
+
     public AlertStatus getStatus(AlertType type) {
-        return airRaidCache.getIfPresent(type);
+        AlertStatus status = airRaidCache.getIfPresent(type);
+        return status != null ? status : AlertStatus.NONE;
     }
 
     public void setStatus(AlertType type, AlertStatus status) {

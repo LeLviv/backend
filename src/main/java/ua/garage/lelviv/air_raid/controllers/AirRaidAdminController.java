@@ -15,7 +15,7 @@ import ua.garage.lelviv.air_raid.services.NotificationService;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/api/admin/air-raid/")
+@RequestMapping("/api/admin/air-raid")
 @PreAuthorize("hasAuthority('ADMIN')")
 @Validated
 public class AirRaidAdminController {
