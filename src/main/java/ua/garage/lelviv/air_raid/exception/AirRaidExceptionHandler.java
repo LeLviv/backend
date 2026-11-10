@@ -22,7 +22,6 @@ public class AirRaidExceptionHandler {
                 HttpStatus.SERVICE_UNAVAILABLE,
                 "Air Raid Service Unavailable",
                 "/alerts-unavailable",
-                "Air raid alert service is temporarily unavailable"
-        );
+                "Air raid alert service is temporarily unavailable");
     }
 }
