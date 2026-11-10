@@ -1,36 +1,30 @@
 package ua.garage.lelviv.weather.exception;
 
-import java.net.URI;
-import java.time.Instant;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ua.garage.lelviv.weather.config.WeatherBaseProperties;
+import ua.garage.lelviv.common.exception.ProblemDetailFactory;
 
+@Order(Ordered.HIGHEST_PRECEDENCE)
 @RestControllerAdvice(basePackages = "ua.garage.lelviv.weather")
 @RequiredArgsConstructor
 public class WeatherExceptionHandler {
-    private final WeatherBaseProperties weatherBaseProperties;
+
+    private final ProblemDetailFactory problemDetailFactory;
 
     @ExceptionHandler(WeatherServiceUnavailableException.class)
     public ProblemDetail handleWeatherUnavailable(WeatherServiceUnavailableException ex) {
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.SERVICE_UNAVAILABLE, ex.getMessage());
-        problemDetail.setTitle("Weather Service Unavailable");
-        problemDetail.setType(URI.create(weatherBaseProperties.baseErrorsUrl() + "/weather-unavailable"));
-        problemDetail.setProperty("timestamp", Instant.now());
-
-        return problemDetail;
+        return problemDetailFactory.create(
+                HttpStatus.SERVICE_UNAVAILABLE, "Weather Service Unavailable", "/weather-unavailable", ex.getMessage());
     }
 
     @ExceptionHandler(RegionNotFoundException.class)
     public ProblemDetail handleRegionNotFound(RegionNotFoundException ex) {
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
-        problemDetail.setTitle("Region Not Found");
-        problemDetail.setType(URI.create(weatherBaseProperties.baseErrorsUrl() + "/region-not-found"));
-        problemDetail.setProperty("timestamp", Instant.now());
-
-        return problemDetail;
+        return problemDetailFactory.create(
+                HttpStatus.NOT_FOUND, "Region Not Found", "/region-not-found", ex.getMessage());
     }
 }

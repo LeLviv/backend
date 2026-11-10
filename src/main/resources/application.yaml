@@ -4,7 +4,11 @@ spring:
     security:
       jwt:
         secret-key: ${JWT_SECRET_KEY}
+
 app:
+  exception:
+    base-errors-url: ${BASE_ERRORS_URL:https://lelviv.pp.ua/errors}
+
   air-raid:
     time-zone: "Europe/Kyiv"
     send-notification-on-update: ${AUTOMATIC_NOTIFICATIONS:false}
