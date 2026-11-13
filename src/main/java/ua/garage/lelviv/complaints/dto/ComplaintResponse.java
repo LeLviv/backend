@@ -1,4 +1,4 @@
-package ua.garage.lelviv.complaints;
+package ua.garage.lelviv.complaints.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -4,6 +4,12 @@ spring:
     security:
       jwt:
         secret-key: ${JWT_SECRET_KEY}
+
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 6MB
+
 app:
   air-raid:
     time-zone: "Europe/Kyiv"
