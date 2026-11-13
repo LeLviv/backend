@@ -1,6 +1,3 @@
-server:
-  port: ${SERVER_PORT:8080}
-
 spring:
   application:
     name: lelviv
@@ -37,9 +34,10 @@ app:
     secret-key: ${AIR_RAID_API_TOKEN}
     delay: "61000"
 
-  firebase:
-    enabled: ${FIREBASE_ENABLED:false}
-    credentials: ${FIREBASE_CREDENTIALS_JSON}
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 6MB
 
   weather:
     base-errors-url: "https://lelviv.pp.ua/errors"
