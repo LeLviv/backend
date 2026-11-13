@@ -5,6 +5,11 @@ spring:
       jwt:
         secret-key: ${JWT_SECRET_KEY}
 
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 6MB
+
 app:
   weather:
     base-errors-url: "https://lelviv.pp.ua/errors"

@@ -1,11 +1,12 @@
-package ua.garage.lelviv.complaints;
+package ua.garage.lelviv.complaints.entities;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
-@Data
+@Getter
+@Setter
 @Builder
 @Entity
 @AllArgsConstructor
@@ -16,10 +17,10 @@ public class Complaint {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NonNull
+    @Column(nullable = false)
     private String author;
 
-    @NonNull
+    @Column(nullable = false)
     private String problem;
 
     private String photoPath;
