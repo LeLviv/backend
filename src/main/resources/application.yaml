@@ -1,9 +1,30 @@
+server:
+  port: ${SERVER_PORT:8080}
+
 spring:
   application:
     name: lelviv
     security:
       jwt:
         secret-key: ${JWT_SECRET_KEY}
+  threads:
+    virtual:
+      enabled: true
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  mvc:
+    problemdetails:
+      enabled: true
+
+  docker:
+    compose:
+      enabled: false
 app:
   air-raid:
     time-zone: "Europe/Kyiv"
