@@ -50,3 +50,8 @@ springdoc:
     tags-sorter: alpha
     operations-sorter: alpha
     display-request-duration: true
+
+app:
+  security:
+    jwt:
+      secret-key: ${JWT_SECRET_KEY:ChangeThisJwtSecretKeyToAStrongRandomValue01}
