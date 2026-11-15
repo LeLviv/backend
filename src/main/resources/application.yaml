@@ -4,9 +4,6 @@ server:
 spring:
   application:
     name: lelviv
-    security:
-      jwt:
-        secret-key: ${JWT_SECRET_KEY}
   threads:
     virtual:
       enabled: true
@@ -26,6 +23,9 @@ spring:
     compose:
       enabled: false
 app:
+  security:
+    jwt:
+      secret-key: ${JWT_SECRET_KEY}
   air-raid:
     time-zone: "Europe/Kyiv"
     send-notification-on-update: ${AUTOMATIC_NOTIFICATIONS:false}
