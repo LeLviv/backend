@@ -10,7 +10,7 @@ spring:
   datasource:
     url: ${POSTGRES_URL:jdbc:postgresql://${POSTGRES_HOST:127.0.0.1}:${POSTGRES_PORT:5432}/${POSTGRES_DB:lelviv}}
     username: ${POSTGRES_USER:lelviv}
-    password: ${POSTGRES_PASSWORD:use-some-strong-password-for-access-to-db}
+    password: ${POSTGRES_PASSWORD:lelviv}
     hikari:
       maximum-pool-size: 5
       leak-detection-threshold: 20000
