@@ -2,14 +2,14 @@ name: lelviv-spring
 
 services:
   postgres:
-    image: 'docker.io/library/postgres:18.6-alpine'
+    image: "docker.io/library/postgres:18.6-alpine"
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-lelviv}
       POSTGRES_USER: ${POSTGRES_USER:-lelviv}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-use-some-strong-password-for-access-to-db}
       POSTGRES_INITDB_ARGS: "--locale-provider=icu --icu-locale=uk-UA --encoding=UTF8"
     ports:
-      - '${POSTGRES_HOST:-127.0.0.1}:${POSTGRES_PORT:-5432}:5432'
+      - "${POSTGRES_HOST:-127.0.0.1}:${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql
     shm_size: 128mb

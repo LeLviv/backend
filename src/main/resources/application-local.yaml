@@ -6,7 +6,7 @@ spring:
     import:
       - optional:file:./config/application-custom.yaml
       - optional:file:.env[.properties]
-    
+
   datasource:
     url: ${POSTGRES_URL:jdbc:postgresql://${POSTGRES_HOST:127.0.0.1}:${POSTGRES_PORT:5432}/${POSTGRES_DB:lelviv}}
     username: ${POSTGRES_USER:lelviv}
@@ -35,7 +35,7 @@ logging:
     sql: DEBUG
     web: INFO
     org.springframework.web.servlet.DispatcherServlet: DEBUG
-    org.springframework.transaction.interceptor: TRACE 
+    org.springframework.transaction.interceptor: TRACE
 
 management:
   endpoints:
