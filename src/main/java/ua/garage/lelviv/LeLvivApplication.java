@@ -9,10 +9,10 @@ import ua.garage.lelviv.authorization.config.JwtProperties;
 @SpringBootApplication
 @EnableConfigurationProperties(JwtProperties.class)
 @EnableScheduling
-public class LelvivApplication {
+public class LeLvivApplication {
 
     public static void main(String[] args) {
 
-        SpringApplication.run(LelvivApplication.class, args);
+        SpringApplication.run(LeLvivApplication.class, args);
     }
 }
