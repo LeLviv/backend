@@ -54,8 +54,6 @@ public class ComplaintsService {
 
     @Transactional(readOnly = true)
     public Complaint getComplaint(Long id) {
-        return repository
-                .findById(id)
-                .orElseThrow(() -> new ComplaintFindException("Complaint " + id + " not found"));
+        return repository.findById(id).orElseThrow(() -> new ComplaintFindException("Complaint " + id + " not found"));
     }
 }
