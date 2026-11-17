@@ -14,15 +14,15 @@ import org.springframework.web.multipart.MultipartFile;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ComplaintRequest {
-    @NotBlank(message = "Повинен бути текст скарги")
+    @NotBlank(message = "Complaint cannot be empty")
     private String complaint;
 
-    @Min(value = -90, message = "Невірна широта")
-    @Max(value = 90, message = "Невірна широта")
+    @Min(value = -90, message = "Invalid latitude")
+    @Max(value = 90, message = "Invalid latitude")
     private Double latitude;
 
-    @Min(value = -180, message = "Невірна довгота")
-    @Max(value = 180, message = "Невірна довгота")
+    @Min(value = -180, message = "Invalid longitude")
+    @Max(value = 180, message = "Invalid longitude")
     private Double longitude;
 
     private MultipartFile photo;

@@ -39,7 +39,7 @@ public class ComplaintsService {
                     .build();
 
             repository.save(problem);
-            return new ComplaintResponse("Скаргу успішно подано");
+            return new ComplaintResponse("Complaint successfully submitted");
         } catch (Exception e) {
             fileUploadService.deleteFile(photoUrl);
             throw e;
@@ -56,6 +56,6 @@ public class ComplaintsService {
     public Complaint getComplaint(Long id) {
         return repository
                 .findById(id)
-                .orElseThrow(() -> new ComplaintFindException("Скаргу з ID " + id + " не знайдено"));
+                .orElseThrow(() -> new ComplaintFindException("Complaint " + id + " not found"));
     }
 }

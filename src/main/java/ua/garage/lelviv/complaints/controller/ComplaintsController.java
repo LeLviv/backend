@@ -15,7 +15,7 @@ import ua.garage.lelviv.complaints.entities.Complaint;
 import ua.garage.lelviv.complaints.service.ComplaintsService;
 
 @RestController
-@RequestMapping("/complaints")
+@RequestMapping("/api/v1/complaints")
 @RequiredArgsConstructor
 public class ComplaintsController {
     private final ComplaintsService service;
