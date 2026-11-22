@@ -9,17 +9,16 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.tika.Tika;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ua.garage.lelviv.complaints.exception.FileStorageException;
 import ua.garage.lelviv.complaints.exception.InvalidFileTypeException;
 
+@Slf4j
 @Service
 public class FileUploadService {
-    private static final Logger log = LoggerFactory.getLogger(FileUploadService.class);
 
     private final Tika tika = new Tika();
     private static final List<String> ALLOWED_MIME_TYPES = List.of("image/jpeg", "image/png", "image/webp");
