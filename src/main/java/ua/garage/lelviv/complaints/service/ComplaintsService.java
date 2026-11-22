@@ -8,6 +8,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import ua.garage.lelviv.complaints.dto.ComplaintDto;
 import ua.garage.lelviv.complaints.dto.ComplaintRequest;
 import ua.garage.lelviv.complaints.dto.ComplaintResponse;
 import ua.garage.lelviv.complaints.entities.Complaint;
@@ -47,13 +48,27 @@ public class ComplaintsService {
     }
 
     @Transactional(readOnly = true)
-    public Page<Complaint> getComplaints(int page, int size) {
+    public Page<ComplaintDto> getComplaints(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        return repository.findAll(pageable);
+        return repository.findAll(pageable).map(this::toDto);
     }
 
     @Transactional(readOnly = true)
-    public Complaint getComplaint(Long id) {
-        return repository.findById(id).orElseThrow(() -> new ComplaintFindException("Complaint " + id + " not found"));
+    public ComplaintDto getComplaint(Long id) {
+        return toDto(repository
+                .findById(id)
+                .orElseThrow(() -> new ComplaintFindException("Complaint " + id + " not found")));
+    }
+
+    private ComplaintDto toDto(Complaint entity) {
+        return ComplaintDto.builder()
+                .id(entity.getId())
+                .author(entity.getAuthor())
+                .problem(entity.getProblem())
+                .photoPath(entity.getPhotoPath())
+                .latitude(entity.getLatitude())
+                .longitude(entity.getLongitude())
+                .createdAt(entity.getCreatedAt())
+                .build();
     }
 }

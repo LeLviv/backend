@@ -1,6 +1,8 @@
 package ua.garage.lelviv.complaints.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import java.security.Principal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -11,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import ua.garage.lelviv.complaints.dto.ComplaintDto;
 import ua.garage.lelviv.complaints.dto.ComplaintRequest;
 import ua.garage.lelviv.complaints.dto.ComplaintResponse;
-import ua.garage.lelviv.complaints.entities.Complaint;
 import ua.garage.lelviv.complaints.service.ComplaintsService;
 
 @RestController
@@ -30,9 +31,10 @@ public class ComplaintsController {
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping
     public ResponseEntity<Page<ComplaintDto>> getComplaints(
-            @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size) {
+            @Min(0) @RequestParam(defaultValue = "0") int page,
+            @Min(1) @Max(100) @RequestParam(defaultValue = "20") int size) {
 
-        Page<ComplaintDto> complainsPage = service.getComplaints(page, size).map(this::toDto);
+        Page<ComplaintDto> complainsPage = service.getComplaints(page, size);
 
         return ResponseEntity.ok(complainsPage);
     }
@@ -40,20 +42,8 @@ public class ComplaintsController {
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<ComplaintDto> getComplaint(@PathVariable Long id) {
-        Complaint complaint = service.getComplaint(id);
+        ComplaintDto complaint = service.getComplaint(id);
 
-        return ResponseEntity.ok(toDto(complaint));
-    }
-
-    private ComplaintDto toDto(Complaint entity) {
-        return ComplaintDto.builder()
-                .id(entity.getId())
-                .author(entity.getAuthor())
-                .problem(entity.getProblem())
-                .photoPath(entity.getPhotoPath())
-                .latitude(entity.getLatitude())
-                .longitude(entity.getLongitude())
-                .createdAt(entity.getCreatedAt())
-                .build();
+        return ResponseEntity.ok(complaint);
     }
 }

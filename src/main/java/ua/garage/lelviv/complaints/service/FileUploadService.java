@@ -3,12 +3,15 @@ package ua.garage.lelviv.complaints.service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.UUID;
 import org.apache.tika.Tika;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ua.garage.lelviv.complaints.exception.FileStorageException;
@@ -16,6 +19,7 @@ import ua.garage.lelviv.complaints.exception.InvalidFileTypeException;
 
 @Service
 public class FileUploadService {
+    private static final Logger log = LoggerFactory.getLogger(FileUploadService.class);
 
     private final Tika tika = new Tika();
     private static final List<String> ALLOWED_MIME_TYPES = List.of("image/jpeg", "image/png", "image/webp");
@@ -55,11 +59,22 @@ public class FileUploadService {
     }
 
     public void deleteFile(String filePath) {
-        if (filePath != null) {
-            try {
-                Files.deleteIfExists(Paths.get(filePath));
-            } catch (IOException ignored) {
+        if (filePath == null || filePath.isBlank()) {
+            return;
+        }
+
+        try {
+            Path uploadDir = Paths.get(UPLOAD_DIR).toAbsolutePath().normalize();
+            Path targetPath = Paths.get(filePath).toAbsolutePath().normalize();
+
+            if (!targetPath.startsWith(uploadDir) || targetPath.equals(uploadDir)) {
+                log.warn("Blocked attempt to delete file outside upload directory: {}", filePath);
+                return;
             }
+
+            Files.deleteIfExists(targetPath);
+        } catch (IOException | InvalidPathException e) {
+            log.warn("Failed to delete file: {}", filePath, e);
         }
     }
 
