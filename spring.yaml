@@ -24,9 +24,34 @@ services:
       start_interval: 1s
     restart: unless-stopped
     stop_grace_period: 30s
+  rustfs:
+    image: rustfs/rustfs:1.0.6
+    ports:
+      - "${RUSTFS_HOST:-127.0.0.1}:${RUSTFS_PORT:-9000}:9000"
+      - "${RUSTFS_CONSOLE_HOST:-127.0.0.1}:${RUSTFS_CONSOLE_PORT:-9001}:9001"
+    volumes:
+      - rustfs_data:/data
+    networks:
+      - db
+    environment:
+      RUSTFS_ACCESS_KEY: ${S3_ACCESS_KEY:-rustfsadmin}
+      RUSTFS_SECRET_KEY: ${S3_SECRET_KEY:-rustfsadmin}
+      RUSTFS_ADDRESS: ":9000"
+      RUSTFS_CONSOLE_ADDRESS: ":9001"
+      RUSTFS_CONSOLE_ENABLE: "true"
+      RUSTFS_OBS_LOGGER_LEVEL: info
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://127.0.0.1:9000/health || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+      start_interval: 1s
+    restart: unless-stopped
 
 volumes:
   postgres_data:
+  rustfs_data:
 
 networks:
   db:
