@@ -14,7 +14,7 @@ import ua.garage.lelviv.complaints.exception.InvalidFileTypeException;
 @Component
 @RequiredArgsConstructor
 public class FileUploadValidator {
-    private Tika tika;
+    private final Tika tika;
 
     public ValidatedFile validateAndPrepare(MultipartFile file, String folder, List<String> allowedMimeTypes) {
         if (file == null || file.isEmpty()) {
@@ -47,10 +47,29 @@ public class FileUploadValidator {
         if (folder == null || folder.isBlank()) {
             return "";
         }
-        String cleaned = folder.trim().replace("\\", "/").replaceAll("^/+|/+$", "");
-        if (cleaned.contains("..")) {
-            throw new FileStorageException("Invalid folder path: " + folder);
+
+        String normalized = folder.trim().replace('\\', '/');
+
+        int start = 0;
+        int end = normalized.length();
+        while (start < end && normalized.charAt(start) == '/') {
+            start++;
         }
+        while (end > start && normalized.charAt(end - 1) == '/') {
+            end--;
+        }
+
+        String cleaned = normalized.substring(start, end);
+        if (cleaned.isEmpty()) {
+            return "";
+        }
+
+        for (String segment : cleaned.split("/")) {
+            if (segment.isEmpty() || segment.equals(".") || segment.equals("..")) {
+                throw new FileStorageException("Invalid folder path: " + folder);
+            }
+        }
+
         return cleaned;
     }
 

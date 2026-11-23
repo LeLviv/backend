@@ -34,7 +34,6 @@ public class ComplaintsService {
         }
 
         try {
-
             var problem = Complaint.builder()
                     .problem(complaintRequest.getComplaint())
                     .longitude(complaintRequest.getLongitude())
@@ -69,7 +68,7 @@ public class ComplaintsService {
                 .id(entity.getId())
                 .author(entity.getAuthor())
                 .problem(entity.getProblem())
-                .photoPath(entity.getPhotoPath())
+                .photoPath(fileUploadService.getFileUrl(entity.getPhotoPath()))
                 .latitude(entity.getLatitude())
                 .longitude(entity.getLongitude())
                 .createdAt(entity.getCreatedAt())
