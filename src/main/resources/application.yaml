@@ -1,14 +1,34 @@
+server:
+  port: ${SERVER_PORT:8080}
+
 spring:
   application:
     name: lelviv
-    security:
-      jwt:
-        secret-key: ${JWT_SECRET_KEY}
+  threads:
+    virtual:
+      enabled: true
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  mvc:
+    problemdetails:
+      enabled: true
 
+  docker:
+    compose:
+      enabled: false
 app:
   exception:
     base-errors-url: ${BASE_ERRORS_URL:https://lelviv.pp.ua/errors}
 
+  security:
+    jwt:
+      secret-key: ${JWT_SECRET_KEY}
   air-raid:
     time-zone: "Europe/Kyiv"
     send-notification-on-update: ${AUTOMATIC_NOTIFICATIONS:false}
@@ -25,7 +45,6 @@ app:
     credentials: ${FIREBASE_CREDENTIALS_JSON}
 
   weather:
-    base-errors-url: "https://lelviv.pp.ua/errors"
     default-timezone: "Europe/Kyiv"
 
     provider:

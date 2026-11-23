@@ -22,6 +22,7 @@ jobs:
         id: betterleaks
         with:
           version: "latest"
+          config: ".betterleaks.toml"
           redact: "true"
           github-token: ""
 

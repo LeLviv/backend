@@ -36,5 +36,10 @@ out/
 ### VS Code ###
 .vscode/
 
+### Local Environment & Overrides ###
+.env*
+!.env.example
+/config/application-custom.yaml
+
 ### Common secrets ###
 *firebase*

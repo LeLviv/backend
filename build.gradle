@@ -5,6 +5,14 @@ plugins {
     id 'jacoco'
 	id 'com.diffplug.spotless' version '8.10.4'
 	id 'checkstyle'
+	id "org.sonarqube" version "7.5.0.8588"
+}
+
+sonar {
+	properties {
+		property "sonar.projectKey", "LeLviv_backend"
+		property "sonar.organization", "lelviv"
+	}
 }
 
 jacoco {
@@ -82,6 +90,10 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+tasks.named('bootRun') {
+	systemProperty 'spring.profiles.active', System.getenv('SPRING_PROFILES_ACTIVE') ?: 'local'
 }
 
 tasks.test {

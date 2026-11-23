@@ -1,0 +1,11 @@
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Ignore placeholder credentials in .env.example"
+condition = "AND"
+paths = ['^\.env\.example$']
+regexTarget = "secret"
+regexes = [
+    '^lelviv$'
+]
