@@ -2,49 +2,44 @@ package ua.garage.lelviv.common.exception;
 
 import java.util.HashMap;
 import java.util.Map;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ProblemDetail;
-import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.http.*;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @RestControllerAdvice
 @RequiredArgsConstructor
-public class GlobalExceptionHandler {
+public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     private final ProblemDetailFactory problemDetailFactory;
 
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ProblemDetail handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
-        return problemDetailFactory.create(
-                HttpStatus.BAD_REQUEST,
-                "Malformed JSON Request",
-                "/malformed-json",
-                "The body contains invalid JSON or is missing");
+    @Override
+    protected ResponseEntity<Object> handleExceptionInternal(
+            @NonNull Exception ex,
+            Object body,
+            @NonNull HttpHeaders headers,
+            @NonNull HttpStatusCode statusCode,
+            @NonNull WebRequest request) {
+
+        String detail = ex.getMessage() != null ? ex.getMessage() : statusCode.toString();
+        ProblemDetail problemDetail = problemDetailFactory.create(
+                HttpStatus.valueOf(statusCode.value()),
+                HttpStatus.valueOf(statusCode.value()).getReasonPhrase(),
+                "/errors/" + statusCode.value(),
+                detail);
+        return ResponseEntity.status(statusCode).headers(headers).body(problemDetail);
     }
 
-    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ProblemDetail handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException ex) {
-        return problemDetailFactory.create(
-                HttpStatus.METHOD_NOT_ALLOWED, "Method Not Supported", "/method-not-allowed", ex.getMessage());
-    }
-
-    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ProblemDetail handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
-        String detail = String.format(
-                "Parameter '%s' should be of type '%s'",
-                ex.getName(),
-                ex.getRequiredType() != null ? ex.getRequiredType().getSimpleName() : "unknown");
-
-        return problemDetailFactory.create(HttpStatus.BAD_REQUEST, "Type Mismatch", "/type-mismatch", detail);
-    }
-
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ProblemDetail handleValidationException(MethodArgumentNotValidException ex) {
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(
+            @NonNull MethodArgumentNotValidException ex,
+            @NonNull HttpHeaders headers,
+            @NonNull HttpStatusCode status,
+            @NonNull WebRequest request) {
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getFieldErrors().forEach(error -> {
             String fieldName = error.getField();
@@ -59,11 +54,11 @@ public class GlobalExceptionHandler {
                 "Invalid request content. Please check the 'errors' field for details");
         problemDetail.setProperty("errors", errors);
 
-        return problemDetail;
+        return ResponseEntity.status(status).headers(headers).body(problemDetail);
     }
 
     @ExceptionHandler(Exception.class)
-    public ProblemDetail handleUncaughtException(Exception ex) {
+    protected ProblemDetail handleUncaughtException(Exception ex) {
         return problemDetailFactory.create(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 "Internal Server Error",

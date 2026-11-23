@@ -1,8 +1,10 @@
 package ua.garage.lelviv.authorization.config;
 
 import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -29,7 +31,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
-            @NonNull FilterChain filterChain) {
+            @NonNull FilterChain filterChain)
+            throws ServletException, IOException {
         try {
             final String authHeader = request.getHeader("Authorization");
             final String jwt;
@@ -49,9 +52,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             }
-            filterChain.doFilter(request, response);
         } catch (Exception ex) {
             resolver.resolveException(request, response, null, ex);
+            return;
         }
+
+        filterChain.doFilter(request, response);
     }
 }

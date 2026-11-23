@@ -1,6 +1,7 @@
 package ua.garage.lelviv.authorization.exception;
 
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -29,6 +30,12 @@ public class AuthenticationExceptionHandler {
     public ProblemDetail handleTokenExpired(ExpiredJwtException ex) {
         return problemDetailFactory.create(
                 HttpStatus.UNAUTHORIZED, "Token Expired", "/token-expired", "Your access token has expired");
+    }
+
+    @ExceptionHandler(JwtException.class)
+    public ProblemDetail handleJwtException(JwtException ex) {
+        return problemDetailFactory.create(
+                HttpStatus.UNAUTHORIZED, "Invalid Token", "/invalid-token", "Your access token is invalid");
     }
 
     @ExceptionHandler(AuthenticationException.class)
