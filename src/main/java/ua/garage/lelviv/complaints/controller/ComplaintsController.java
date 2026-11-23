@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ua.garage.lelviv.complaints.dto.ComplaintDto;
 import ua.garage.lelviv.complaints.dto.ComplaintRequest;
@@ -18,6 +19,7 @@ import ua.garage.lelviv.complaints.service.ComplaintsService;
 @RestController
 @RequestMapping("/api/v1/complaints")
 @RequiredArgsConstructor
+@Validated
 public class ComplaintsController {
     private final ComplaintsService service;
 

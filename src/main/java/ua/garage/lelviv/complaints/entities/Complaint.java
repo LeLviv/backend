@@ -23,7 +23,7 @@ public class Complaint {
     @Column(nullable = false)
     private String problem;
 
-    @Column(name = "photopath")
+    @Column
     private String photoPath;
 
     private Double latitude;
