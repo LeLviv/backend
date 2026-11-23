@@ -14,23 +14,26 @@ import ua.garage.lelviv.complaints.dto.ComplaintResponse;
 import ua.garage.lelviv.complaints.entities.Complaint;
 import ua.garage.lelviv.complaints.entities.ComplaintRepository;
 import ua.garage.lelviv.complaints.exception.ComplaintFindException;
+import ua.garage.lelviv.storage.FileUploadService;
+import ua.garage.lelviv.storage.StorageProperties;
 
 @Service
 @RequiredArgsConstructor
 public class ComplaintsService {
     private final ComplaintRepository repository;
     private final FileUploadService fileUploadService;
+    private final StorageProperties storageProperties;
 
     public ComplaintResponse processComplaint(ComplaintRequest complaintRequest, String username) {
         String photoUrl = null;
         MultipartFile photo = complaintRequest.getPhoto();
 
         if (photo != null && !photo.isEmpty()) {
-            photoUrl = fileUploadService.saveSafeFile(photo);
+            photoUrl = fileUploadService.saveSafeFile(
+                    photo, storageProperties.folders().complaints());
         }
 
         try {
-
             var problem = Complaint.builder()
                     .problem(complaintRequest.getComplaint())
                     .longitude(complaintRequest.getLongitude())
@@ -65,7 +68,7 @@ public class ComplaintsService {
                 .id(entity.getId())
                 .author(entity.getAuthor())
                 .problem(entity.getProblem())
-                .photoPath(entity.getPhotoPath())
+                .photoPath(fileUploadService.getFileUrl(entity.getPhotoPath()))
                 .latitude(entity.getLatitude())
                 .longitude(entity.getLongitude())
                 .createdAt(entity.getCreatedAt())
