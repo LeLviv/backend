@@ -1,11 +1,52 @@
+server:
+  port: ${SERVER_PORT:8080}
+
 spring:
   application:
     name: lelviv
-    security:
-      jwt:
-        secret-key: ${JWT_SECRET_KEY}
+  threads:
+    virtual:
+      enabled: true
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  mvc:
+    problemdetails:
+      enabled: true
 
+  docker:
+    compose:
+      enabled: false
+
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 6MB
 app:
+  security:
+    jwt:
+      secret-key: ${JWT_SECRET_KEY}
+
+  air-raid:
+    time-zone: "Europe/Kyiv"
+    send-notification-on-update: ${AUTOMATIC_NOTIFICATIONS:false}
+    enabled: ${AIR_RAID_ENABLED:false}
+    region-id: ${REGION_ID:845}
+    base-url: "https://api.ukrainealarm.com/api"
+    connection-timeout: ${AIR_RAID_CONNECTION_TIMEOUT:5000}
+    read-timeout: ${AIR_RAID_READ_TIMEOUT:10000}
+    secret-key: ${AIR_RAID_API_TOKEN}
+    delay: "61000"
+
+  firebase:
+    enabled: ${FIREBASE_ENABLED:false}
+    credentials: ${FIREBASE_CREDENTIALS_JSON}
+
   weather:
     base-errors-url: "https://lelviv.pp.ua/errors"
     default-timezone: "Europe/Kyiv"
@@ -80,3 +121,19 @@ app:
           sliding-window-size: 6
           failure-rate-threshold: 50
           wait-duration-in-open-state: 30s
+
+  storage:
+    type: ${STORAGE_TYPE:local}
+    folders:
+      events: events
+      complaints: complaints
+    local:
+      base-dir: ${LOCAL_BASE_DIR:uploads}
+      public-prefix: /uploads
+    s3:
+      bucket: ${AWS_S3_BUCKET:}
+      region: ${AWS_REGION:}
+      access-key: ${AWS_ACCESS_KEY:}
+      secret-key: ${AWS_SECRET_ACCESS_KEY:}
+      public-url-prefix: ${AWS_S3_PUBLIC_URL:}
+      endpoint: ${AWS_S3_ENDPOINT:}

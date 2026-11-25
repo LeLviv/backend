@@ -1,0 +1,57 @@
+server:
+  address: ${SERVER_HOST:127.0.0.1}
+
+spring:
+  config:
+    import:
+      - optional:file:./config/application-custom.yaml
+      - optional:file:.env[.properties]
+
+  datasource:
+    url: ${POSTGRES_URL:jdbc:postgresql://${POSTGRES_HOST:127.0.0.1}:${POSTGRES_PORT:5432}/${POSTGRES_DB:lelviv}}
+    username: ${POSTGRES_USER:lelviv}
+    password: ${POSTGRES_PASSWORD:lelviv}
+    hikari:
+      maximum-pool-size: 5
+      leak-detection-threshold: 20000
+
+  jpa:
+    properties:
+      hibernate:
+        highlight_sql: true
+
+  docker:
+    compose:
+      enabled: true
+      file: spring.yaml
+
+logging:
+  pattern:
+    console: "%clr(%d{HH:mm:ss.SSS}){faint} %clr(%5p) %clr(%-35.35logger{35}){cyan} %clr(:){faint} %m%n"
+  level:
+    root: INFO
+    ua.garage: DEBUG
+    sql: DEBUG
+    web: INFO
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
+
+springdoc:
+  swagger-ui:
+    tags-sorter: alpha
+    operations-sorter: alpha
+    display-request-duration: true
+
+app:
+  security:
+    jwt:
+      secret-key: ${JWT_SECRET_KEY:ChangeThisJwtSecretKeyToAStrongRandomValue01}
