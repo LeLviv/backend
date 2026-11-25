@@ -1,5 +1,6 @@
 package ua.garage.lelviv.events;
 
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,8 +12,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import ua.garage.lelviv.events.entities.*;
 import ua.garage.lelviv.storage.FileUploadService;
-
-import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -30,8 +29,7 @@ public class EventService {
             LocalDateTime to,
             boolean freeOnly,
             boolean upcomingOnly,
-            Pageable pageable
-    ) {
+            Pageable pageable) {
         Specification<Event> spec = EventSpecification.withFilters(title, from, to, freeOnly, upcomingOnly);
         return eventRepository.findAll(spec, pageable).map(this::toResponse);
     }
@@ -98,7 +96,8 @@ public class EventService {
     }
 
     private Event findEventOrThrow(Long id) {
-        return eventRepository.findById(id)
+        return eventRepository
+                .findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found with id: " + id));
     }
 
@@ -120,7 +119,6 @@ public class EventService {
                 event.getEventEnd(),
                 event.getLocation(),
                 event.getPrice(),
-                event.getUrl()
-        );
+                event.getUrl());
     }
 }

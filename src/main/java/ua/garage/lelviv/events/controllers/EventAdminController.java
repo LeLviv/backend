@@ -8,9 +8,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import ua.garage.lelviv.events.EventService;
 import ua.garage.lelviv.events.entities.EventRequest;
 import ua.garage.lelviv.events.entities.EventResponse;
-import ua.garage.lelviv.events.EventService;
 
 @RestController
 @RequestMapping("/api/admin/events")
@@ -22,8 +22,7 @@ public class EventAdminController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<EventResponse> createEvent(
             @RequestPart("data") @Valid EventRequest request,
-            @RequestPart(value = "thumbnail", required = false) MultipartFile thumbnail
-    ) {
+            @RequestPart(value = "thumbnail", required = false) MultipartFile thumbnail) {
         EventResponse created = eventService.createEvent(request, thumbnail);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
@@ -32,8 +31,7 @@ public class EventAdminController {
     public EventResponse updateEvent(
             @PathVariable Long id,
             @RequestPart("data") @Valid EventRequest request,
-            @RequestPart(value = "thumbnail", required = false) MultipartFile thumbnail
-    ) {
+            @RequestPart(value = "thumbnail", required = false) MultipartFile thumbnail) {
         return eventService.updateEvent(id, request, thumbnail);
     }
 
