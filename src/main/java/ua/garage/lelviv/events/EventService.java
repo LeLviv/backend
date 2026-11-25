@@ -1,6 +1,5 @@
 package ua.garage.lelviv.events;
 
-import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,11 +9,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
-import ua.garage.lelviv.events.entities.EventRequest;
-import ua.garage.lelviv.events.entities.EventResponse;
-import ua.garage.lelviv.events.entities.Event;
-import ua.garage.lelviv.events.entities.EventRepository;
-import ua.garage.lelviv.events.entities.EventSpecification;
+import ua.garage.lelviv.events.entities.*;
+import ua.garage.lelviv.storage.FileUploadService;
+
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +21,7 @@ public class EventService {
     private static final String EVENTS_UPLOAD_FOLDER = "events";
 
     private final EventRepository eventRepository;
-    private final FileStorageService fileStorageService;
+    private final FileUploadService fileUploadService;
 
     @Transactional(readOnly = true)
     public Page<EventResponse> getEvents(
@@ -49,19 +47,19 @@ public class EventService {
 
         String thumbnailPath = null;
         if (thumbnail != null && !thumbnail.isEmpty()) {
-            thumbnailPath = fileStorageService.saveSafeFile(thumbnail, EVENTS_UPLOAD_FOLDER);
+            thumbnailPath = fileUploadService.saveSafeFile(thumbnail, EVENTS_UPLOAD_FOLDER);
         }
 
         Event event = Event.builder()
-                .title(request.title())
-                .host(request.host())
+                .title(request.getTitle())
+                .host(request.getHost())
                 .thumbnailPath(thumbnailPath)
-                .description(request.description())
-                .eventStart(request.eventStart())
-                .eventEnd(request.eventEnd())
-                .location(request.location())
-                .price(request.price())
-                .url(request.url())
+                .description(request.getDescription())
+                .eventStart(request.getEventStart())
+                .eventEnd(request.getEventEnd())
+                .location(request.getLocation())
+                .price(request.getPrice())
+                .url(request.getUrl())
                 .build();
 
         return toResponse(eventRepository.save(event));
@@ -74,19 +72,19 @@ public class EventService {
 
         if (thumbnail != null && !thumbnail.isEmpty()) {
             String oldPath = event.getThumbnailPath();
-            String newPath = fileStorageService.saveSafeFile(thumbnail, EVENTS_UPLOAD_FOLDER);
+            String newPath = fileUploadService.saveSafeFile(thumbnail, EVENTS_UPLOAD_FOLDER);
             event.setThumbnailPath(newPath);
-            fileStorageService.deleteFile(oldPath);
+            fileUploadService.deleteFile(oldPath);
         }
 
-        event.setTitle(request.title());
-        event.setHost(request.host());
-        event.setDescription(request.description());
-        event.setEventStart(request.eventStart());
-        event.setEventEnd(request.eventEnd());
-        event.setLocation(request.location());
-        event.setPrice(request.price());
-        event.setUrl(request.url());
+        event.setTitle(request.getTitle());
+        event.setHost(request.getHost());
+        event.setDescription(request.getDescription());
+        event.setEventStart(request.getEventStart());
+        event.setEventEnd(request.getEventEnd());
+        event.setLocation(request.getLocation());
+        event.setPrice(request.getPrice());
+        event.setUrl(request.getUrl());
 
         return toResponse(eventRepository.save(event));
     }
@@ -96,7 +94,7 @@ public class EventService {
         Event event = findEventOrThrow(id);
         String thumbnailPath = event.getThumbnailPath();
         eventRepository.delete(event);
-        fileStorageService.deleteFile(thumbnailPath);
+        fileUploadService.deleteFile(thumbnailPath);
     }
 
     private Event findEventOrThrow(Long id) {
@@ -105,7 +103,7 @@ public class EventService {
     }
 
     private void validateDates(EventRequest request) {
-        if (request.eventEnd() != null && request.eventEnd().isBefore(request.eventStart())) {
+        if (request.getEventEnd() != null && request.getEventEnd().isBefore(request.getEventStart())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Event end time cannot be before start time");
         }
     }

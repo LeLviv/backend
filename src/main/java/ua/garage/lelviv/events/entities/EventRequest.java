@@ -2,11 +2,10 @@ package ua.garage.lelviv.events.entities;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -14,7 +13,6 @@ import org.springframework.web.multipart.MultipartFile;
 @NoArgsConstructor
 @Valid
 public class EventRequest {
-
     @NotBlank(message = "Title is required")
     @Size(max = 256)
     private String title;
@@ -29,9 +27,9 @@ public class EventRequest {
     private MultipartFile thumbnail;
 
     @NotNull(message = "Event start time is required")
-    private String eventStart;
+    private LocalDateTime eventStart;
 
-    private String eventEnd;
+    private LocalDateTime eventEnd;
 
     @NotBlank(message = "Location is required")
     @Size(max = 512)

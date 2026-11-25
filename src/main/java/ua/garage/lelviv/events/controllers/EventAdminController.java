@@ -13,11 +13,10 @@ import ua.garage.lelviv.events.entities.EventResponse;
 import ua.garage.lelviv.events.EventService;
 
 @RestController
-@RequestMapping("/api/v1/admin/events")
+@RequestMapping("/api/admin/events")
 @PreAuthorize("hasAuthority('ADMIN')")
 @RequiredArgsConstructor
 public class EventAdminController {
-
     private final EventService eventService;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
