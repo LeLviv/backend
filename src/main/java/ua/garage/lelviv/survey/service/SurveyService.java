@@ -38,24 +38,23 @@ public class SurveyService {
 
     @Transactional
     public void vote(Long surveyId, VoteRequest request, Long userId) {
-        Survey survey = surveyRepository
-                .findById(surveyId)
-                .orElseThrow(() -> new SurveyNotFoundException("Таке опитування не було знайдене"));
+        Survey survey =
+                surveyRepository.findById(surveyId).orElseThrow(() -> new SurveyNotFoundException("Survey not found"));
 
         if (!(survey.getSurveyStatus() == ACTIVE) || Instant.now().isAfter(survey.getEndTime())) {
-            throw new SurveyExpiredException("Опитування закінчилось");
+            throw new SurveyExpiredException("Survey expired");
         }
 
         if (Instant.now().isBefore(survey.getStartTime())) {
-            throw new SurveyExpiredException("Опитування ще не почалося");
+            throw new SurveyExpiredException("Survey has not begun");
         }
 
         if (voteRepository.existsBySurveyIdAndUserId(survey.getId(), userId)) {
-            throw new AlreadyVotedException("Ви вже проголосували в цьому опитуванні");
+            throw new AlreadyVotedException("You have already voted");
         }
 
         if (survey.getOptionByPosition(request.getChoice()) == null) {
-            throw new OptionNotFoundException("Такого варіанту відповіді немає");
+            throw new OptionNotFoundException("Option does not exist");
         }
 
         Vote vote = new Vote();
@@ -78,8 +77,7 @@ public class SurveyService {
                 .collect(Collectors.toCollection(ArrayList::new));
 
         if (request.getStartTime().isAfter(request.getEndTime())) {
-            throw new InvalidSurveyDataException(
-                    "Час закінчення опитування не може бути раніше часу, коли воно починається");
+            throw new InvalidSurveyDataException("Survey must end after its beginning");
         }
 
         var survey = Survey.builder()
@@ -97,9 +95,8 @@ public class SurveyService {
 
     @Transactional(readOnly = true)
     public SurveyResponseDto getSurvey(Long id) {
-        Survey survey = surveyRepository
-                .findById(id)
-                .orElseThrow(() -> new SurveyNotFoundException("Такого опитування не існує"));
+        Survey survey =
+                surveyRepository.findById(id).orElseThrow(() -> new SurveyNotFoundException("Survey does not exist"));
 
         List<VoteCountProjection> voteCounts =
                 voteRepository.countVotesForSurveysGroupedByOption(List.of(survey.getId()));
@@ -138,7 +135,7 @@ public class SurveyService {
     public void cancelSurvey(Long id) {
         Survey survey = surveyRepository
                 .findById(id)
-                .orElseThrow(() -> new SurveyNotFoundException("Опитування з таким Id не знайдено"));
+                .orElseThrow(() -> new SurveyNotFoundException("Survey with that Id not found"));
 
         survey.setSurveyStatus(CANCELED);
     }
@@ -147,7 +144,7 @@ public class SurveyService {
     public void changeSurveyExpiration(Long id, Instant newTime) {
         Survey survey = surveyRepository
                 .findById(id)
-                .orElseThrow(() -> new SurveyNotFoundException("Опитування з таким id не знайдено"));
+                .orElseThrow(() -> new SurveyNotFoundException("Survey with that id not found"));
 
         survey.setEndTime(newTime);
     }

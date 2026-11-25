@@ -25,6 +25,6 @@ public class MakeSurveyRequest {
     private Instant endTime;
 
     @NotNull
-    @Size(min = 2, message = "В опитуванні повинно бути щонайменше 2 варіанти")
+    @Size(min = 2, message = "Survey should contain at least 2 options")
     private List<@NotBlank String> options;
 }

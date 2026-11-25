@@ -18,7 +18,7 @@ import ua.garage.lelviv.survey.dto.response.SurveyResponseDto;
 import ua.garage.lelviv.survey.service.SurveyService;
 
 @RestController
-@RequestMapping("/surveys")
+@RequestMapping("/api/v1/surveys")
 @RequiredArgsConstructor
 public class SurveyController {
 
