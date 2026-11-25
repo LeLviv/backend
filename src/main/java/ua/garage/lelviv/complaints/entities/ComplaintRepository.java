@@ -1,4 +1,4 @@
-package ua.garage.lelviv.complaints;
+package ua.garage.lelviv.complaints.entities;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
