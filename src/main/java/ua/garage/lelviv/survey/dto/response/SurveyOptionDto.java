@@ -8,5 +8,5 @@ import lombok.Data;
 public class SurveyOptionDto {
     private Long position;
     private String option;
-    private Integer votesCount;
+    private Long votesCount;
 }

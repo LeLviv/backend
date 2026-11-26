@@ -10,7 +10,7 @@ import ua.garage.lelviv.survey.projection.VoteCountProjection;
 public interface VoteRepository extends JpaRepository<Vote, Long> {
     boolean existsBySurveyIdAndUserId(Long surveyId, Long userId);
 
-    Integer countBySurveyIdAndOptionId(Long surveyId, Long optionId);
+    Long countBySurveyIdAndOptionId(Long surveyId, Long optionId);
 
     @Query("SELECT v.surveyId AS surveyId, v.optionId AS optionId, COUNT(v.id) AS voteCount "
             + "FROM Vote v WHERE v.surveyId IN :surveyIds GROUP BY v.surveyId, v.optionId")

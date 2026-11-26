@@ -4,5 +4,7 @@ CREATE TABLE votes (
  option_id BIGINT NOT NULL,
  user_id BIGINT NOT NULL,
  CONSTRAINT uk_survey_user UNIQUE (survey_id, user_id),
- CONSTRAINT fk_vote_survey FOREIGN KEY (survey_id) REFERENCES surveys (id) ON DELETE CASCADE
+ CONSTRAINT fk_vote_survey FOREIGN KEY (survey_id) REFERENCES surveys (id) ON DELETE CASCADE,
+ CONSTRAINT fk_vote_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+
 );

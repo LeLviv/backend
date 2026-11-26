@@ -5,5 +5,5 @@ public interface VoteCountProjection {
 
     Long getOptionId();
 
-    Integer getVoteCount();
+    Long getVoteCount();
 }

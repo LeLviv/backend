@@ -100,12 +100,13 @@ public class SurveyService {
 
         List<VoteCountProjection> voteCounts =
                 voteRepository.countVotesForSurveysGroupedByOption(List.of(survey.getId()));
-        Map<Long, Integer> votesMap = voteCounts.stream()
+        Map<Long, Long> votesMap = voteCounts.stream()
                 .collect(Collectors.toMap(VoteCountProjection::getOptionId, VoteCountProjection::getVoteCount));
 
         return mapToDto(survey, votesMap);
     }
 
+    @Transactional(readOnly = true)
     public Page<SurveyResponseDto> getSurveys(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("endTime").descending());
         Page<Survey> surveyPage = surveyRepository.findAll(pageable);
@@ -119,13 +120,13 @@ public class SurveyService {
 
         List<VoteCountProjection> voteCounts = voteRepository.countVotesForSurveysGroupedByOption(surveyIds);
 
-        Map<Long, Map<Long, Integer>> votesBySurveyAndOption = voteCounts.stream()
+        Map<Long, Map<Long, Long>> votesBySurveyAndOption = voteCounts.stream()
                 .collect(Collectors.groupingBy(
                         VoteCountProjection::getSurveyId,
                         Collectors.toMap(VoteCountProjection::getOptionId, VoteCountProjection::getVoteCount)));
 
         return surveyPage.map(survey -> {
-            Map<Long, Integer> optionVotes =
+            Map<Long, Long> optionVotes =
                     votesBySurveyAndOption.getOrDefault(survey.getId(), Collections.emptyMap());
             return mapToDto(survey, optionVotes);
         });
@@ -149,12 +150,12 @@ public class SurveyService {
         survey.setEndTime(newTime);
     }
 
-    private SurveyResponseDto mapToDto(Survey survey, Map<Long, Integer> votesMap) {
+    private SurveyResponseDto mapToDto(Survey survey, Map<Long, Long> votesMap) {
         List<SurveyOptionDto> optionDtos = survey.getOptions().stream()
                 .map(opt -> SurveyOptionDto.builder()
                         .position(opt.getPosition())
                         .option(opt.getOption())
-                        .votesCount(votesMap.getOrDefault(opt.getPosition(), 0))
+                        .votesCount(votesMap.getOrDefault(opt.getPosition(), 0L ))
                         .build())
                 .toList();
 

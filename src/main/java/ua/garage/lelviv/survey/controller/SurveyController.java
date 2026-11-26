@@ -2,6 +2,9 @@ package ua.garage.lelviv.survey.controller;
 
 import jakarta.validation.Valid;
 import java.time.Instant;
+
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -9,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ua.garage.lelviv.authorization.entities.User;
 import ua.garage.lelviv.survey.dto.request.MakeSurveyRequest;
@@ -20,6 +24,7 @@ import ua.garage.lelviv.survey.service.SurveyService;
 @RestController
 @RequestMapping("/api/v1/surveys")
 @RequiredArgsConstructor
+@Validated
 public class SurveyController {
 
     private final SurveyService service;
@@ -49,7 +54,7 @@ public class SurveyController {
 
     @GetMapping
     public ResponseEntity<Page<SurveyResponseDto>> getSurveys(
-            @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size) {
+            @Min(0) @RequestParam(defaultValue = "0") int page, @Min(1) @Max(100) @RequestParam(defaultValue = "20") int size) {
         Page<SurveyResponseDto> surveysPage = service.getSurveys(page, size);
 
         return ResponseEntity.ok(surveysPage);
