@@ -126,8 +126,7 @@ public class SurveyService {
                         Collectors.toMap(VoteCountProjection::getOptionId, VoteCountProjection::getVoteCount)));
 
         return surveyPage.map(survey -> {
-            Map<Long, Long> optionVotes =
-                    votesBySurveyAndOption.getOrDefault(survey.getId(), Collections.emptyMap());
+            Map<Long, Long> optionVotes = votesBySurveyAndOption.getOrDefault(survey.getId(), Collections.emptyMap());
             return mapToDto(survey, optionVotes);
         });
     }
@@ -155,7 +154,7 @@ public class SurveyService {
                 .map(opt -> SurveyOptionDto.builder()
                         .position(opt.getPosition())
                         .option(opt.getOption())
-                        .votesCount(votesMap.getOrDefault(opt.getPosition(), 0L ))
+                        .votesCount(votesMap.getOrDefault(opt.getPosition(), 0L))
                         .build())
                 .toList();
 

@@ -1,10 +1,9 @@
 package ua.garage.lelviv.survey.controller;
 
 import jakarta.validation.Valid;
-import java.time.Instant;
-
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import java.time.Instant;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -54,7 +53,8 @@ public class SurveyController {
 
     @GetMapping
     public ResponseEntity<Page<SurveyResponseDto>> getSurveys(
-            @Min(0) @RequestParam(defaultValue = "0") int page, @Min(1) @Max(100) @RequestParam(defaultValue = "20") int size) {
+            @Min(0) @RequestParam(defaultValue = "0") int page,
+            @Min(1) @Max(100) @RequestParam(defaultValue = "20") int size) {
         Page<SurveyResponseDto> surveysPage = service.getSurveys(page, size);
 
         return ResponseEntity.ok(surveysPage);
