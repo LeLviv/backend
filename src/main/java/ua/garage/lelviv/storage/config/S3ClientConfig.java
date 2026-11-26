@@ -42,9 +42,8 @@ public class S3ClientConfig {
 
         return baseBuilder(properties)
                 .endpointOverride(URI.create(local.endpoint()))
-                .serviceConfiguration(S3Configuration.builder()
-                        .pathStyleAccessEnabled(true)
-                        .build())
+                .serviceConfiguration(
+                        S3Configuration.builder().pathStyleAccessEnabled(true).build())
                 .credentialsProvider(StaticCredentialsProvider.create(
                         AwsBasicCredentials.create(local.accessKey(), local.secretKey())))
                 .build();

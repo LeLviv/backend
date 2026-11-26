@@ -11,17 +11,14 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 @ConfigurationProperties(prefix = "app.storage.s3")
 public record S3Properties(
-        @NotBlank(message = "S3 bucket must not be blank")
-        String bucket,
+        @NotBlank(message = "S3 bucket must not be blank") String bucket,
 
-        @NotBlank(message = "S3 region must not be blank")
-        @DefaultValue("us-east-1")
+        @NotBlank(message = "S3 region must not be blank") @DefaultValue("us-east-1")
         String region,
 
         String publicUrlPrefix,
 
-        @Valid
-        Local local) {
+        @Valid Local local) {
 
     @Validated
     public record Local(
@@ -33,7 +30,6 @@ public record S3Properties(
             @Size(min = 8, message = "secretKey must be at least 8 characters")
             String secretKey,
 
-            @NotBlank(message = "endpoint is required for local S3")
-            @URL(message = "endpoint must be a valid URL")
+            @NotBlank(message = "endpoint is required for local S3") @URL(message = "endpoint must be a valid URL")
             String endpoint) {}
 }
