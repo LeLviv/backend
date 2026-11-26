@@ -25,12 +25,17 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             @NonNull HttpStatusCode statusCode,
             @NonNull WebRequest request) {
 
-        String detail = ex.getMessage() != null ? ex.getMessage() : statusCode.toString();
+        if (body instanceof ProblemDetail problemDetail) {
+            return ResponseEntity.status(statusCode).headers(headers).body(problemDetail);
+        }
+
+        HttpStatus status = HttpStatus.resolve(statusCode.value());
+        String title = status != null ? status.getReasonPhrase() : "HTTP Error";
         ProblemDetail problemDetail = problemDetailFactory.create(
-                HttpStatus.valueOf(statusCode.value()),
-                HttpStatus.valueOf(statusCode.value()).getReasonPhrase(),
+                status != null ? status : HttpStatus.INTERNAL_SERVER_ERROR,
+                title,
                 "/errors/" + statusCode.value(),
-                detail);
+                title);
         return ResponseEntity.status(statusCode).headers(headers).body(problemDetail);
     }
 
