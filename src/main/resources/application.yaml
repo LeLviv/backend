@@ -28,6 +28,9 @@ spring:
       max-file-size: 5MB
       max-request-size: 6MB
 app:
+  exception:
+    base-errors-url: ${BASE_ERRORS_URL:https://lelviv.pp.ua/errors}
+
   security:
     jwt:
       secret-key: ${JWT_SECRET_KEY}
@@ -48,7 +51,6 @@ app:
     credentials: ${FIREBASE_CREDENTIALS_JSON}
 
   weather:
-    base-errors-url: "https://lelviv.pp.ua/errors"
     default-timezone: "Europe/Kyiv"
 
     provider:
