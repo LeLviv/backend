@@ -57,3 +57,9 @@ logging:
     ua.garage: INFO
     web: WARN
     org.hibernate: WARN
+
+app:
+  storage:
+    s3:
+      bucket: ${S3_BUCKET}
+      region: ${S3_REGION}

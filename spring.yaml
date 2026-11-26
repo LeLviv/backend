@@ -34,8 +34,8 @@ services:
     networks:
       - db
     environment:
-      RUSTFS_ACCESS_KEY: ${S3_ACCESS_KEY:-rustfsadmin}
-      RUSTFS_SECRET_KEY: ${S3_SECRET_KEY:-rustfsadmin}
+      RUSTFS_ACCESS_KEY: ${S3_ACCESS_KEY:-lelvivadmin}
+      RUSTFS_SECRET_KEY: ${S3_SECRET_KEY:-lelvivadmin}
       RUSTFS_ADDRESS: ":9000"
       RUSTFS_CONSOLE_ADDRESS: ":9001"
       RUSTFS_CONSOLE_ENABLE: "true"
@@ -48,6 +48,19 @@ services:
       start_period: 10s
       start_interval: 1s
     restart: unless-stopped
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        (
+          until curl -s -f http://127.0.0.1:9000/health > /dev/null 2>&1; do
+            sleep 1
+          done
+          curl -s -X PUT http://127.0.0.1:9000/${S3_BUCKET:-lelviv} \
+            --user "${S3_ACCESS_KEY:-lelvivadmin}:${S3_SECRET_KEY:-lelvivadmin}" \
+            --aws-sigv4 "aws:amz:${S3_REGION:-us-east-1}:s3" > /dev/null 2>&1 || true
+        ) &
+        exec /entrypoint.sh /usr/bin/rustfs
 
 volumes:
   postgres_data:
