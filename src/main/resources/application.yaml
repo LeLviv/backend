@@ -22,6 +22,11 @@ spring:
   docker:
     compose:
       enabled: false
+
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 6MB
 app:
   security:
     jwt:
@@ -119,3 +124,19 @@ app:
           sliding-window-size: 6
           failure-rate-threshold: 50
           wait-duration-in-open-state: 30s
+
+  storage:
+    type: ${STORAGE_TYPE:local}
+    folders:
+      events: events
+      complaints: complaints
+    local:
+      base-dir: ${LOCAL_BASE_DIR:uploads}
+      public-prefix: /uploads
+    s3:
+      bucket: ${AWS_S3_BUCKET:}
+      region: ${AWS_REGION:}
+      access-key: ${AWS_ACCESS_KEY:}
+      secret-key: ${AWS_SECRET_ACCESS_KEY:}
+      public-url-prefix: ${AWS_S3_PUBLIC_URL:}
+      endpoint: ${AWS_S3_ENDPOINT:}
