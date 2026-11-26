@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ua.garage.lelviv.weather.config.WeatherBaseProperties;
 
-@RestControllerAdvice(basePackages = "ua.garage.lelviv.weather")
+@RestControllerAdvice
 @RequiredArgsConstructor
 public class WeatherExceptionHandler {
     private final WeatherBaseProperties weatherBaseProperties;

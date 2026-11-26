@@ -32,6 +32,9 @@ app:
     jwt:
       secret-key: ${JWT_SECRET_KEY}
 
+  ai:
+    gemini-api-key: ${GEMINI_API_KEY}
+
   air-raid:
     time-zone: "Europe/Kyiv"
     send-notification-on-update: ${AUTOMATIC_NOTIFICATIONS:false}
