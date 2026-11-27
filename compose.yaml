@@ -15,7 +15,6 @@ services:
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-local}
     ports:
       - "${SERVER_HOST:-127.0.0.1}:${SERVER_PORT:-8080}:8080"
-      - "$S3_HOST:-127.0.0.1}:${S3_PORT:-9000}:9000"
     depends_on:
       postgres:
         condition: service_healthy

@@ -27,7 +27,7 @@ services:
   rustfs:
     image: rustfs/rustfs:1.0.6
     ports:
-      - "${RUSTFS_HOST:-127.0.0.1}:${RUSTFS_PORT:-9000}:9000"
+      - "${S3_HOST:-127.0.0.1}:${S3_PORT:-9000}:9000"
       - "${RUSTFS_CONSOLE_HOST:-127.0.0.1}:${RUSTFS_CONSOLE_PORT:-9001}:9001"
     volumes:
       - rustfs_data:/data
