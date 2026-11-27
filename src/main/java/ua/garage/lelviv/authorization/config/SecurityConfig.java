@@ -28,10 +28,11 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> auth.requestMatchers("/api/v1/auth/**", "/api/v1/air-raid/**")
-                        .permitAll()
-                        .anyRequest()
-                        .authenticated())
+                .authorizeHttpRequests(
+                        auth -> auth.requestMatchers("/api/v1/auth/**", "/api/v1/air-raid/**", "/api/v1/events/**")
+                                .permitAll()
+                                .anyRequest()
+                                .authenticated())
                 .exceptionHandling(handling ->
                         handling.authenticationEntryPoint(authEntryPoint).accessDeniedHandler(accessDeniedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
