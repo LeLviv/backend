@@ -36,7 +36,7 @@ public class EventService {
             int page,
             int size) {
         Specification<Event> spec = EventSpecification.withFilters(title, from, to, freeOnly, upcomingOnly);
-        Pageable pageable = PageRequest.of(page, size, Sort.by("eventStart").descending());
+        Pageable pageable = PageRequest.of(page, size, Sort.by("eventStart").ascending().and(Sort.by("id").ascending()));
         return eventRepository.findAll(spec, pageable).map(this::toResponse);
     }
 
@@ -82,12 +82,8 @@ public class EventService {
                 return new UpdateResult(toResponse(saved), newPath != null ? oldPath : null);
             });
         } catch (Exception e) {
-            fileUploadService.deleteFile(newPath);
-            throw e;
-        }
-        if (result == null) {
             deleteIfPresent(newPath);
-            throw new IllegalStateException("Transaction failed");
+            throw e;
         }
         deleteIfPresent(result.oldPathToDelete());
         return result.response();

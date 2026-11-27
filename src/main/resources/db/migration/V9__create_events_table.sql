@@ -10,4 +10,6 @@ CREATE TABLE events(
     location VARCHAR(512) NOT NULL,
     price INTEGER NOT NULL CHECK (price >= 0),
     url VARCHAR(512)
-)
+);
+
+CREATE INDEX idx_event_start ON events (event_start ASC, id ASC);

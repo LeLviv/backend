@@ -18,15 +18,12 @@ public class EventExceptionHandler {
     @ExceptionHandler(EventNotFoundException.class)
     public ProblemDetail handleEventNotFoundException(EventNotFoundException ex) {
         return problemDetailFactory.create(
-                HttpStatus.NOT_FOUND, "Event Not Found", "/events-unavailable", "Queried event does not exist");
+                HttpStatus.NOT_FOUND, "Event Not Found", "/events-unavailable", ex.getMessage());
     }
 
     @ExceptionHandler(BadEventRequestException.class)
     public ProblemDetail handleBadEventRequestException(BadEventRequestException ex) {
         return problemDetailFactory.create(
-                HttpStatus.BAD_REQUEST,
-                "Bad Event Request",
-                "/events-bad-request",
-                "Event with sent id does not exist");
+                HttpStatus.BAD_REQUEST, "Bad Event Request", "/events-bad-request", ex.getMessage());
     }
 }
