@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,6 +14,7 @@ import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 import ua.garage.lelviv.complaints.exception.FileStorageException;
+import ua.garage.lelviv.storage.config.S3Properties;
 
 @Slf4j
 @Service
@@ -24,12 +24,7 @@ public class S3FileUploadService implements FileUploadService {
 
     private final FileUploadValidator validator;
     private final S3Client s3Client;
-
-    @Value("${app.storage.s3.bucket}")
-    private String bucketName;
-
-    @Value("${app.storage.s3.public-url-prefix}")
-    private String publicUrlPrefix;
+    private final S3Properties s3Properties;
 
     @Override
     public String saveSafeFile(MultipartFile file, String folder, List<String> allowedMimeTypes) {
@@ -37,7 +32,7 @@ public class S3FileUploadService implements FileUploadService {
 
         try {
             PutObjectRequest putRequest = PutObjectRequest.builder()
-                    .bucket(bucketName)
+                    .bucket(s3Properties.bucket())
                     .key(validated.storageKey())
                     .contentType(validated.contentType())
                     .build();
@@ -61,7 +56,7 @@ public class S3FileUploadService implements FileUploadService {
 
         try {
             s3Client.deleteObject(DeleteObjectRequest.builder()
-                    .bucket(bucketName)
+                    .bucket(s3Properties.bucket())
                     .key(storageKey)
                     .build());
         } catch (S3Exception e) {
@@ -73,6 +68,10 @@ public class S3FileUploadService implements FileUploadService {
     public String getFileUrl(String storageKey) {
         if (storageKey == null || storageKey.isBlank()) {
             return null;
+        }
+        String publicUrlPrefix = s3Properties.publicUrlPrefix();
+        if (publicUrlPrefix == null || publicUrlPrefix.isBlank()) {
+            return storageKey;
         }
         String prefix = publicUrlPrefix.endsWith("/")
                 ? publicUrlPrefix.substring(0, publicUrlPrefix.length() - 1)
