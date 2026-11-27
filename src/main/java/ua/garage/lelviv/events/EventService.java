@@ -1,28 +1,27 @@
 package ua.garage.lelviv.events;
 
 import java.time.LocalDateTime;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
 import ua.garage.lelviv.events.entities.*;
+import ua.garage.lelviv.events.exception.BadEventRequestException;
+import ua.garage.lelviv.events.exception.EventNotFoundException;
 import ua.garage.lelviv.storage.FileUploadService;
+import ua.garage.lelviv.storage.StorageProperties;
 
 @Service
 @RequiredArgsConstructor
 public class EventService {
 
-    private static final String EVENTS_UPLOAD_FOLDER = "events";
-
+    private final StorageProperties properties;
     private final EventRepository eventRepository;
     private final FileUploadService fileUploadService;
     private final TransactionTemplate transactionTemplate;
@@ -48,73 +47,83 @@ public class EventService {
 
     public EventResponse createEvent(EventRequest request, MultipartFile thumbnail) {
         validateDates(request);
-
-        String thumbnailPath = null;
-        if (thumbnail != null && !thumbnail.isEmpty()) {
-            thumbnailPath = fileUploadService.saveSafeFile(thumbnail, EVENTS_UPLOAD_FOLDER);
-        }
+        final String thumbnailPath = uploadIfPresent(thumbnail);
 
         try {
             return transactionTemplate.execute(status -> {
                 Event event = new Event();
                 applyRequest(event, request);
-                event.setThumbnailPath(newPath)
+                event.setThumbnailPath(thumbnailPath);
                 return toResponse(eventRepository.save(event));
             });
         } catch (Exception e) {
-            fileUploadService.deleteFile(thumbnailPath);
+            deleteIfPresent(thumbnailPath);
             throw e;
         }
     }
 
-    @Transactional
     public EventResponse updateEvent(Long id, EventRequest request, MultipartFile thumbnail) {
         validateDates(request);
-        Event event = findEventOrThrow(id);
-
-        String oldPath = event.getThumbnailPath();
-        String newPath = null;
-
-        if (thumbnail != null && !thumbnail.isEmpty()) {
-            newPath = fileUploadService.saveSafeFile(thumbnail, EVENTS_UPLOAD_FOLDER);
-            event.setThumbnailPath(newPath);
+        if (!eventRepository.existsById(id)) {
+            throw new EventNotFoundException(id);
         }
 
+        String newPath = uploadIfPresent(thumbnail);
+        UpdateResult result;
         try {
-            UpdateResult result = transactionTemplate.execute(
-                    status -> {
-                        Event event = findEventOrThrow(id);
-                    });
-            applyRequest(event, request);
-
-            Event saved = eventRepository.save(event);
-            fileUploadService.deleteFile(oldPath);
-
-            return toResponse(saved);
+            result = transactionTemplate.execute(status -> {
+                Event event = findEventOrThrow(id);
+                String oldPath = event.getThumbnailPath();
+                applyRequest(event, request);
+                if (newPath != null) {
+                    event.setThumbnailPath(newPath);
+                }
+                Event saved = eventRepository.save(event);
+                return new UpdateResult(toResponse(saved), newPath != null ? oldPath : null);
+            });
         } catch (Exception e) {
             fileUploadService.deleteFile(newPath);
             throw e;
         }
+        if (result == null) {
+            deleteIfPresent(newPath);
+            throw new IllegalStateException("Transaction failed");
+        }
+        deleteIfPresent(result.oldPathToDelete());
+        return result.response();
     }
 
-    @Transactional
     public void deleteEvent(Long id) {
-        Event event = findEventOrThrow(id);
-        String thumbnailPath = event.getThumbnailPath();
-        eventRepository.delete(event);
-        fileUploadService.deleteFile(thumbnailPath);
+        String thumbnailPath = transactionTemplate.execute(status -> {
+            Event event = findEventOrThrow(id);
+            String path = event.getThumbnailPath();
+            eventRepository.delete(event);
+            return path;
+        });
+        deleteIfPresent(thumbnailPath);
     }
 
     private Event findEventOrThrow(Long id) {
-        return eventRepository
-                .findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found with id: " + id));
+        return eventRepository.findById(id).orElseThrow(() -> new EventNotFoundException(id));
     }
 
     private void validateDates(EventRequest request) {
         if (request.getEventEnd() != null && request.getEventEnd().isBefore(request.getEventStart())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Event end time cannot be before start time");
+            throw new BadEventRequestException("Event end time cannot be before start time");
         }
+    }
+
+    private void deleteIfPresent(String path) {
+        if (path != null && !path.isBlank()) {
+            fileUploadService.deleteFile(path);
+        }
+    }
+
+    private String uploadIfPresent(MultipartFile thumbnail) {
+        if (thumbnail == null || thumbnail.isEmpty()) {
+            return null;
+        }
+        return fileUploadService.saveSafeFile(thumbnail, properties.folders().events());
     }
 
     private EventResponse toResponse(Event event) {
@@ -143,6 +152,5 @@ public class EventService {
         event.setUrl(request.getUrl());
     }
 
-    private record UpdateResult(EventResponse response, String oldPathToDelete) {
-    }
+    private record UpdateResult(EventResponse response, String oldPathToDelete) {}
 }

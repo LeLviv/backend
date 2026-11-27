@@ -28,7 +28,7 @@ public class EventController {
             @RequestParam(defaultValue = "false") boolean freeOnly,
             @RequestParam(defaultValue = "false") boolean upcomingOnly,
             @RequestParam(defaultValue = "0") @Min(0) int page,
-            @RequestParam(defaultValue = "20") @Min(0) @Max(100) int size) {
+            @RequestParam(defaultValue = "20") @Min(1) @Max(100) int size) {
         return eventService.getEvents(title, from, to, freeOnly, upcomingOnly, page, size);
     }
 
