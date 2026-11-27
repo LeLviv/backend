@@ -8,13 +8,15 @@ import ua.garage.lelviv.events.entities.Event;
 
 public class EventSpecification {
 
+    private static final char ESCAPE_CHAR = '\\';
+
     public static Specification<Event> withFilters(
             String title, LocalDateTime from, LocalDateTime to, boolean freeOnly, boolean upcomingOnly) {
         List<Specification<Event>> specs = new ArrayList<>();
 
         if (title != null && !title.isBlank()) {
-            String pattern = "%" + title.trim().toLowerCase() + "%";
-            specs.add((root, query, cb) -> cb.like(cb.lower(root.get("title")), pattern));
+            String pattern = "%" + escapeLikePattern(title.trim().toLowerCase()) + "%";
+            specs.add((root, query, cb) -> cb.like(cb.lower(root.get("title")), pattern, ESCAPE_CHAR));
         }
 
         if (from != null) {
@@ -34,5 +36,9 @@ public class EventSpecification {
         }
 
         return Specification.allOf(specs);
+    }
+
+    private static String escapeLikePattern(String input) {
+        return input.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_");
     }
 }

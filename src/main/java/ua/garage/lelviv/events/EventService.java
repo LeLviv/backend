@@ -1,13 +1,17 @@
 package ua.garage.lelviv.events;
 
 import java.time.LocalDateTime;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import ua.garage.lelviv.events.entities.*;
@@ -21,6 +25,7 @@ public class EventService {
 
     private final EventRepository eventRepository;
     private final FileUploadService fileUploadService;
+    private final TransactionTemplate transactionTemplate;
 
     @Transactional(readOnly = true)
     public Page<EventResponse> getEvents(
@@ -29,8 +34,10 @@ public class EventService {
             LocalDateTime to,
             boolean freeOnly,
             boolean upcomingOnly,
-            Pageable pageable) {
+            int page,
+            int size) {
         Specification<Event> spec = EventSpecification.withFilters(title, from, to, freeOnly, upcomingOnly);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("eventStart").descending());
         return eventRepository.findAll(spec, pageable).map(this::toResponse);
     }
 
@@ -39,7 +46,6 @@ public class EventService {
         return toResponse(findEventOrThrow(id));
     }
 
-    @Transactional
     public EventResponse createEvent(EventRequest request, MultipartFile thumbnail) {
         validateDates(request);
 
@@ -48,19 +54,17 @@ public class EventService {
             thumbnailPath = fileUploadService.saveSafeFile(thumbnail, EVENTS_UPLOAD_FOLDER);
         }
 
-        Event event = Event.builder()
-                .title(request.getTitle())
-                .host(request.getHost())
-                .thumbnailPath(thumbnailPath)
-                .description(request.getDescription())
-                .eventStart(request.getEventStart())
-                .eventEnd(request.getEventEnd())
-                .location(request.getLocation())
-                .price(request.getPrice())
-                .url(request.getUrl())
-                .build();
-
-        return toResponse(eventRepository.save(event));
+        try {
+            return transactionTemplate.execute(status -> {
+                Event event = new Event();
+                applyRequest(event, request);
+                event.setThumbnailPath(newPath)
+                return toResponse(eventRepository.save(event));
+            });
+        } catch (Exception e) {
+            fileUploadService.deleteFile(thumbnailPath);
+            throw e;
+        }
     }
 
     @Transactional
@@ -68,23 +72,29 @@ public class EventService {
         validateDates(request);
         Event event = findEventOrThrow(id);
 
+        String oldPath = event.getThumbnailPath();
+        String newPath = null;
+
         if (thumbnail != null && !thumbnail.isEmpty()) {
-            String oldPath = event.getThumbnailPath();
-            String newPath = fileUploadService.saveSafeFile(thumbnail, EVENTS_UPLOAD_FOLDER);
+            newPath = fileUploadService.saveSafeFile(thumbnail, EVENTS_UPLOAD_FOLDER);
             event.setThumbnailPath(newPath);
-            fileUploadService.deleteFile(oldPath);
         }
 
-        event.setTitle(request.getTitle());
-        event.setHost(request.getHost());
-        event.setDescription(request.getDescription());
-        event.setEventStart(request.getEventStart());
-        event.setEventEnd(request.getEventEnd());
-        event.setLocation(request.getLocation());
-        event.setPrice(request.getPrice());
-        event.setUrl(request.getUrl());
+        try {
+            UpdateResult result = transactionTemplate.execute(
+                    status -> {
+                        Event event = findEventOrThrow(id);
+                    });
+            applyRequest(event, request);
 
-        return toResponse(eventRepository.save(event));
+            Event saved = eventRepository.save(event);
+            fileUploadService.deleteFile(oldPath);
+
+            return toResponse(saved);
+        } catch (Exception e) {
+            fileUploadService.deleteFile(newPath);
+            throw e;
+        }
     }
 
     @Transactional
@@ -112,7 +122,7 @@ public class EventService {
                 event.getId(),
                 event.getTitle(),
                 event.getHost(),
-                event.getThumbnailPath(),
+                fileUploadService.getFileUrl(event.getThumbnailPath()),
                 event.getDescription(),
                 event.getCreatedAt(),
                 event.getEventStart(),
@@ -120,5 +130,19 @@ public class EventService {
                 event.getLocation(),
                 event.getPrice(),
                 event.getUrl());
+    }
+
+    private void applyRequest(Event event, EventRequest request) {
+        event.setTitle(request.getTitle());
+        event.setHost(request.getHost());
+        event.setDescription(request.getDescription());
+        event.setEventStart(request.getEventStart());
+        event.setEventEnd(request.getEventEnd());
+        event.setLocation(request.getLocation());
+        event.setPrice(request.getPrice());
+        event.setUrl(request.getUrl());
+    }
+
+    private record UpdateResult(EventResponse response, String oldPathToDelete) {
     }
 }

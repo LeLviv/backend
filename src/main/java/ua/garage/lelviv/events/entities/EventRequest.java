@@ -4,7 +4,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import java.time.LocalDateTime;
 import lombok.*;
-import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @Builder
@@ -22,8 +21,6 @@ public class EventRequest {
 
     @Size(max = 4096)
     private String description;
-
-    private MultipartFile thumbnail;
 
     @NotNull(message = "Event start time is required")
     private LocalDateTime eventStart;

@@ -52,6 +52,6 @@ public class Event {
     @Column(nullable = false)
     private Integer price;
 
-    @Column
+    @Column(length = 512)
     private String url;
 }
