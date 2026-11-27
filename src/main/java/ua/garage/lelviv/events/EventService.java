@@ -36,7 +36,8 @@ public class EventService {
             int page,
             int size) {
         Specification<Event> spec = EventSpecification.withFilters(title, from, to, freeOnly, upcomingOnly);
-        Pageable pageable = PageRequest.of(page, size, Sort.by("eventStart").ascending().and(Sort.by("id").ascending()));
+        Pageable pageable = PageRequest.of(
+                page, size, Sort.by("eventStart").ascending().and(Sort.by("id").ascending()));
         return eventRepository.findAll(spec, pageable).map(this::toResponse);
     }
 
